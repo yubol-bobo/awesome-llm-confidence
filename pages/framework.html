@@ -114,42 +114,9 @@
         <p>
           The pipeline from state to action flows through four stages:
         </p>
-        <div class="pipeline">
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Decision State</div>
-            <div class="pipeline-symbol">ξ<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Decision Units</div>
-            <div class="pipeline-symbol">U<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Score</div>
-            <div class="pipeline-symbol">κ<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Transform</div>
-            <div class="pipeline-symbol">T̃<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Policy</div>
-            <div class="pipeline-symbol">δ<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Action</div>
-            <div class="pipeline-symbol">a<sub>t</sub></div>
-          </div>
-          <div class="pipeline-arrow">→</div>
-          <div class="pipeline-stage">
-            <div class="pipeline-label">Updated State</div>
-            <div class="pipeline-symbol">ξ<sub>t+1</sub></div>
-          </div>
-        </div>
+        <figure class="figure" style="text-align:center; margin:1.5rem 0;">
+          <img src="../assets/img/formula.png" alt="Decision process pipeline: decision state + decision units → score → optional transformation → policy → action → updated state" style="max-width:100%; height:auto;">
+        </figure>
         <p style="margin-top: 2rem;">
           <strong>Key steps:</strong>
         </p>
