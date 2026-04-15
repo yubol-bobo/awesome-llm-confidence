@@ -68,7 +68,7 @@
         </p>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">P(True) / P(IK): Self-Knowledge Formulations</a></div>
+          <div class="paper-title"><a href="#">Language models (mostly) know what they know</a></div>
           <div class="paper-meta">Kadavath et al. · 2022</div>
           <div class="paper-desc">Asks models directly for P(True) or P(I know), using verbal confidence as a reliability signal.</div>
           <div class="paper-tags">
@@ -80,7 +80,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Just Ask: Verbal Confidence</a></div>
+          <div class="paper-title"><a href="#">Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback</a></div>
           <div class="paper-meta">Tian et al. · EMNLP 2023</div>
           <div class="paper-desc">Elicits verbal confidence statements; calibrates them to predict accuracy on held-out tasks.</div>
           <div class="paper-tags">
@@ -92,7 +92,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">VUF / MUC: Verbal-Semantic Mismatch</a></div>
+          <div class="paper-title"><a href="#">Calibrating Verbal Uncertainty as a Linear Feature to Reduce Hallucinations</a></div>
           <div class="paper-meta">Ji et al. · 2025</div>
           <div class="paper-desc">Detects mismatch between verbalized uncertainty and semantic representations in hidden states.</div>
           <div class="paper-tags">
@@ -104,7 +104,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">UExpr Consistency: Uncertain-Expression Consistency</a></div>
+          <div class="paper-title"><a href="#">Black-Box Hallucination Detection via Consistency Under the Uncertain Expression</a></div>
           <div class="paper-meta">Joo et al. · 2025</div>
           <div class="paper-desc">Measures consistency between uncertain expressions in text and token-level confidence signals.</div>
           <div class="paper-tags">
@@ -123,7 +123,7 @@
         </p>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">SelfCheckGPT: Inter-Sample Consistency</a></div>
+          <div class="paper-title"><a href="#">Selfcheckgpt: Zero-resource black-box hallucination detection for generative large language models</a></div>
           <div class="paper-meta">Manakul et al. · EMNLP 2023</div>
           <div class="paper-desc">Samples multiple responses and flags sentences where agreement is low as potentially hallucinated.</div>
           <div class="paper-tags">
@@ -135,7 +135,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Semantic Entropy: Entropy Over Meaning Clusters</a></div>
+          <div class="paper-title"><a href="#">Detecting hallucinations in large language models using semantic entropy</a></div>
           <div class="paper-meta">Farquhar et al. · Nature 2024</div>
           <div class="paper-desc">Clusters semantic meanings of samples and uses entropy over clusters to detect hallucinations.</div>
           <div class="paper-tags">
@@ -147,7 +147,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">SEPs: Probed Semantic Entropy</a></div>
+          <div class="paper-title"><a href="#">Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs</a></div>
           <div class="paper-meta">Han et al. · ICML Workshop 2024</div>
           <div class="paper-desc">Uses mechanistic probes to compute semantic entropy without sampling; detects uncertainty efficiently.</div>
           <div class="paper-tags">
@@ -159,7 +159,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">INSIDE: EigenScore + Clipping</a></div>
+          <div class="paper-title"><a href="#">INSIDE: LLMs' Internal States Retain the Power of Hallucination Detection</a></div>
           <div class="paper-meta">Chen et al. · ICLR 2024</div>
           <div class="paper-desc">Uses eigenvalue-based scoring of activation matrices to detect hallucinations without sampling.</div>
           <div class="paper-tags">
@@ -171,7 +171,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Internal State: Truth Probe</a></div>
+          <div class="paper-title"><a href="#">The Internal State of an LLM Knows When It's Lying</a></div>
           <div class="paper-meta">Azaria & Mitchell · EMNLP Findings 2023</div>
           <div class="paper-desc">Trains probes on internal states to detect whether models believe their own statements (truthfulness).</div>
           <div class="paper-tags">
@@ -190,7 +190,7 @@
         </p>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">MCQA CP: Option Nonconformity</a></div>
+          <div class="paper-title"><a href="#">Conformal prediction with large language models for multi-choice question answering</a></div>
           <div class="paper-meta">Kumar et al. · 2023</div>
           <div class="paper-desc">Applies conformal prediction to multiple-choice QA; outputs sets of answers with coverage guarantees.</div>
           <div class="paper-tags">
@@ -202,7 +202,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Conformal LM: Sampling + Rejection</a></div>
+          <div class="paper-title"><a href="#">Conformal Language Modeling</a></div>
           <div class="paper-meta">Quach et al. · ICLR 2024</div>
           <div class="paper-desc">Uses conformal prediction with sampling and rejection to construct output sets with formal coverage.</div>
           <div class="paper-tags">
@@ -214,7 +214,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Conformal Factuality: Entailment-Based Claim Filter</a></div>
+          <div class="paper-title"><a href="#">Language Models with Conformal Factuality Guarantees</a></div>
           <div class="paper-meta">Mohri & Hashimoto · ICML 2024</div>
           <div class="paper-desc">Filters claims using conformal entailment scores; guarantees factuality at desired coverage level.</div>
           <div class="paper-tags">
@@ -226,7 +226,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Enhanced CP: Conditional Factuality</a></div>
+          <div class="paper-title"><a href="#">Large language model validity via enhanced conformal prediction methods</a></div>
           <div class="paper-meta">Cherian et al. · NeurIPS 2024</div>
           <div class="paper-desc">Extends conformal prediction with conditional guarantees on claim-level factuality.</div>
           <div class="paper-tags">
@@ -238,7 +238,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Coherent Factuality: Graph-Structured Conformal</a></div>
+          <div class="paper-title"><a href="#">Conformal Language Model Reasoning with Coherent Factuality</a></div>
           <div class="paper-meta">Rubin-Toles et al. · ICLR 2025</div>
           <div class="paper-desc">Applies conformal prediction to claim graphs, maintaining coherence and coverage guarantees.</div>
           <div class="paper-tags">
@@ -250,7 +250,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">API-Only CP: Sample Frequency + Similarity</a></div>
+          <div class="paper-title"><a href="#">API Is Enough: Conformal Prediction for Large Language Models Without Logit-Access</a></div>
           <div class="paper-meta">Su et al. · EMNLP Findings 2024</div>
           <div class="paper-desc">Implements conformal prediction using only API access by leveraging sample frequency and similarity.</div>
           <div class="paper-tags">
@@ -262,7 +262,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">ConfTS: Conformal Temperature Scaling</a></div>
+          <div class="paper-title"><a href="#">Does confidence calibration improve conformal prediction?</a></div>
           <div class="paper-meta">Xi et al. · TMLR 2025</div>
           <div class="paper-desc">Calibrates temperature scaling via conformal methods, ensuring prediction set coverage.</div>
           <div class="paper-tags">
@@ -293,7 +293,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Adapt with Self-Eval: Adapted Self-Eval</a></div>
+          <div class="paper-title"><a href="#">Adaptation with self-evaluation to improve selective prediction in llms</a></div>
           <div class="paper-meta">Chen et al. · EMNLP Findings 2023</div>
           <div class="paper-desc">Fine-tunes models to improve self-evaluation signals specific to a task, enabling better abstention.</div>
           <div class="paper-tags">
@@ -305,7 +305,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Selective Ambiguous QA: Repetition/Agreement</a></div>
+          <div class="paper-title"><a href="#">Selectively answering ambiguous questions</a></div>
           <div class="paper-meta">Cole et al. · EMNLP 2023</div>
           <div class="paper-desc">Uses repetition and multi-sample agreement to detect ambiguous questions; abstains for uncertain cases.</div>
           <div class="paper-tags">
@@ -317,7 +317,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">R-Tuning: Parametric Knowledge Boundary</a></div>
+          <div class="paper-title"><a href="#">R-Tuning: Instructing Large Language Models to Say `I Don't Know`</a></div>
           <div class="paper-meta">Zhang et al. · NAACL 2024</div>
           <div class="paper-desc">Fine-tunes models to recognize knowledge boundaries; abstains for out-of-distribution queries.</div>
           <div class="paper-tags">
@@ -329,7 +329,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">SemEnt FT: Semantic Entropy Fine-Tuning</a></div>
+          <div class="paper-title"><a href="#">Fine-Tuning Large Language Models to Appropriately Abstain with Semantic Entropy</a></div>
           <div class="paper-meta">Tjandra et al. · NeurIPS Workshop 2024</div>
           <div class="paper-desc">Fine-tunes models to produce high semantic entropy when uncertain, enabling abstention.</div>
           <div class="paper-tags">
@@ -341,7 +341,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">ConfTuner: Tokenized Brier Verbal Calibration</a></div>
+          <div class="paper-title"><a href="#">ConfTuner: Training Large Language Models to Express Their Confidence Verbally</a></div>
           <div class="paper-meta">Li et al. · NeurIPS 2025</div>
           <div class="paper-desc">Calibrates verbal confidence via token-level Brier score loss, improving alignment with true accuracy.</div>
           <div class="paper-tags">
@@ -353,7 +353,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">FISCORE: Semantic Cluster Consensus RL</a></div>
+          <div class="paper-title"><a href="#">Teaching LLMs to Abstain via Fine-Grained Semantic Confidence Reward</a></div>
           <div class="paper-meta">An & Xu · 2025</div>
           <div class="paper-desc">Uses RL with semantic clustering rewards to train models that abstain when sample consensus is low.</div>
           <div class="paper-tags">
@@ -365,7 +365,7 @@
         </div>
 
         <div class="paper-card">
-          <div class="paper-title"><a href="#">Activation-Based Abstention: FFN Activation Confidence</a></div>
+          <div class="paper-title"><a href="#">Confidence-Based Response Abstinence: Improving LLM Trustworthiness via Activation-Based Uncertainty Estimation</a></div>
           <div class="paper-meta">Huang et al. · UncertaiNLP 2025</div>
           <div class="paper-desc">Uses feed-forward network activation patterns to detect uncertainty; enables abstention without retraining.</div>
           <div class="paper-tags">
