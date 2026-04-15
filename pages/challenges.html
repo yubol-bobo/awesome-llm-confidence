@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Challenges | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html" class="active">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Open Challenges</h1>
+    <p>Five recurring challenges for confidence-guided control in LLMs (§9)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#challenge-1">Challenge 1: Heterogeneous Semantics</a></li>
+          <li><a href="#challenge-2">Challenge 2: Composition</a></li>
+          <li><a href="#challenge-3">Challenge 3: Attribution</a></li>
+          <li><a href="#challenge-4">Challenge 4: Decision-Awareness</a></li>
+          <li><a href="#challenge-5">Challenge 5: Robustness</a></li>
+          <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Across the six application domains (training, inference, routing, RAG, risk, agentic), 
+          five systemic challenges recur. These are not bugs in individual papers, but rather fundamental 
+          tensions that limit the maturity of confidence-guided control.
+        </p>
+      </section>
+
+      <img src="../assets/img/open_challenges.png" alt="Open challenges illustration" style="width: 100%; margin: 2rem 0; border-radius: 8px;">
+
+      <section id="challenge-1">
+        <h2 class="ch1">Challenge 1: Heterogeneous Confidence Semantics</h2>
+        <p>
+          Verbalized confidence ("I am 90% sure"), agreement (answer frequency across samples), semantic entropy 
+          (entropy over semantic clusters), process reward model scores, and peer confidence from multi-agent voting 
+          are all useful. But are they measuring the same thing?
+        </p>
+        <p>
+          <strong>The problem:</strong> These signals can correlate negatively. A sample with high semantic entropy 
+          (disagreement) may still have high verbal confidence ("The answer is X, and I'm sure"). A process reward 
+          may score a step highly even though the next step is uncertain. A large-scale verifier may disagree with 
+          a small-scale self-check.
+        </p>
+        <p>
+          <strong>Current practice:</strong> Most methods pick one source and stick with it (SELF-RAG uses reflection tokens; 
+          LATS uses value + reflection; ReConcile uses peer voting). When systems combine sources (CRAG, UP-RLHF), they 
+          typically average or ensemble without preserving which signal is which.
+        </p>
+        <p>
+          <strong>Path forward:</strong> Develop semantically grounded confidence representations. Rather than treating 
+          confidence as a scalar, represent it as a structured belief: "I am 90% confident in X under assumptions A, B, C." 
+          This enables transparent comparison and composition. Mechanistic interpretability (probing, causal intervention) 
+          may help ground these signals in model behavior.
+        </p>
+      </section>
+
+      <section id="challenge-2">
+        <h2 class="ch2">Challenge 2: Composition Across Units and Horizons</h2>
+        <p>
+          Individual units (tokens, claims, steps) have confidence scores. But how do these compose to trajectory-level confidence?
+        </p>
+        <p>
+          <strong>The problem:</strong> A trajectory with five high-confidence steps can still fail if the steps are dependent 
+          and one mistake cascades. Conversely, a trajectory with one low-confidence step may succeed if that step is independent. 
+          Token-level confidence does not directly predict answer-level confidence. Claim-level confidence does not predict 
+          full-response grounding.
+        </p>
+        <p>
+          <strong>Current practice:</strong> Methods use heuristics: minimum confidence (most conservative), average or product 
+          (geometric mean), or train auxiliary models (process rewards, trajectory rewards) to predict global confidence. 
+          But these are not principled; different problems likely require different composition rules.
+        </p>
+        <p>
+          <strong>Path forward:</strong> Study composition rules empirically and theoretically. Under what conditions is confidence 
+          subadditive (worse than product) or superadditive (better)? Learn composition functions end-to-end alongside base confidence 
+          models. Develop formal methods (e.g., probabilistic graphical models) that respect dependencies and causal structure.
+        </p>
+      </section>
+
+      <section id="challenge-3">
+        <h2 class="ch3">Challenge 3: Source Attribution and Confidence Fusion</h2>
+        <p>
+          Best systems combine multiple sources: self-confidence, auxiliary verifiers, external retrievals, peer votes. 
+          But tracking provenance and preventing unjustified fusion is hard.
+        </p>
+        <p>
+          <strong>The problem:</strong> When a verifier model is trained on biased data, its confidence can propagate to downstream 
+          decisions. When self-confidence is "hijacked" by prompt injection, it can override sound auxiliary signals. When confidence 
+          from multiple sources is naively averaged, their individual calibration is lost. We lose the ability to ask: "Why did the 
+          system make this decision?" and "Which signal was responsible?"
+        </p>
+        <p>
+          <strong>Current practice:</strong> Most systems either use a single source (limiting expressivity) or fuse sources via 
+          learned weights without interpretation. ReConcile and ConfMAD aggregate agent votes, but don't track source provenance.
+        </p>
+        <p>
+          <strong>Path forward:</strong> Develop confidence aggregation methods that preserve attribution. Use techniques from 
+          Shapley values or SHAP to quantify each source's contribution to final decisions. Tag confidence signals by source 
+          (self, auxiliary model, retrieval, peer) and make the attribution explicit in logs and explanations. Enable rollback: 
+          if one source is corrupted, decisions remain valid conditioned on removing that source.
+        </p>
+      </section>
+
+      <section id="challenge-4">
+        <h2 class="ch4">Challenge 4: Decision-Aware Objectives and Evaluation</h2>
+        <p>
+          Calibration (confidence matches true accuracy) is not the same as routing quality, conformal efficiency, or abstention quality. 
+          Yet many papers optimize for calibration and assume it transfers to downstream tasks.
+        </p>
+        <p>
+          <strong>The problem:</strong> A model can be perfectly calibrated but still bad at routing (its confidence may not correlate 
+          with answer quality). A routing system can have high efficiency (uses few queries to reach high accuracy) but poor coverage 
+          guarantees (sometimes fails silently). An abstention policy can be conservative (rarely wrong) but unusable (abstains on 80% 
+          of queries).
+        </p>
+        <p>
+          <strong>Current practice:</strong> Papers optimize for different metrics with little coordination: Calibration (ConfTuner), 
+          routing accuracy (RouteLLM, CARGO), conformal coverage (TRAQ, Conformal Factuality), abstention F1-score (R-Tuning). 
+          Results don't generalize across tasks or settings.
+        </p>
+        <p>
+          <strong>Path forward:</strong> Define task-specific confidence objectives. For routing, optimize for cost-accuracy tradeoff 
+          given a model portfolio. For RAG, optimize for retrieval quality weighted by context utility. For risk, optimize for 
+          selective reliability (high accuracy on answered queries, low error rate). Make the downstream decision explicit in the loss 
+          function and evaluation metric.
+        </p>
+      </section>
+
+      <section id="challenge-5">
+        <h2 class="ch5">Challenge 5: Robustness and Portability</h2>
+        <p>
+          A confidence system trained on one model, prompt format, task distribution, or threat model often fails in another setting.
+        </p>
+        <p>
+          <strong>The problem:</strong> Self-confidence (token probabilities) is calibrated for closed-ended QA but breaks on reasoning tasks 
+          with multiple valid paths. Semantic entropy works for semantic agreement but fails when linguistic diversity is high. Process 
+          rewards trained on one domain don't generalize to another. Confidence signals degrade under distribution shift, adversarial prompts, 
+          or fine-tuning.
+        </p>
+        <p>
+          <strong>Current practice:</strong> Most papers evaluate on a fixed benchmark (MMLU, GSM8K, HotpotQA). Claims of "generalization" 
+          typically mean within-domain transfer. Robustness to OOD data, adversarial examples, or new model architectures is rarely tested.
+        </p>
+        <p>
+          <strong>Path forward:</strong> Design confidence systems with explicit robustness objectives. Test confidence signals under 
+          distribution shift (new tasks, domains, languages), prompt injection, fine-tuning, and model scaling. Develop meta-confidence 
+          signals that detect when base signals are unreliable. Curate open benchmarks that measure robustness across diverse settings. 
+          Study the stability of confidence under model updates and continual learning.
+        </p>
+      </section>
+
+      <section id="conclusion">
+        <h2>Conclusion: The Path Forward</h2>
+        <p>
+          Confidence is most powerful as a <strong>control signal</strong>. The next generation of systems will need to address these 
+          five challenges systematically:
+        </p>
+        <ul>
+          <li>
+            <strong>Semantically interpretable</strong> — confidence representations that preserve meaning and enable transparent comparison.
+          </li>
+          <li>
+            <strong>Composable</strong> — principled methods to combine unit-level and trajectory-level confidence with formal properties.
+          </li>
+          <li>
+            <strong>Source-aware</strong> — systems that track provenance, enable attribution, and support rollback on corrupted signals.
+          </li>
+          <li>
+            <strong>Decision-aware</strong> — objectives indexed to downstream actions (routing, selection, abstention, escalation).
+          </li>
+          <li>
+            <strong>Robust</strong> — confidence signals that remain reliable across model families, domains, prompt formats, and threat models.
+          </li>
+        </ul>
+        <p>
+          This survey has catalogued the current landscape: 200+ papers across six domains, using confidence to shape training data, 
+          direct inference, route models, gate retrieval, detect hallucinations, and guide agentic search. The depth and breadth of work 
+          is impressive. The challenges ahead demand equal rigor.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

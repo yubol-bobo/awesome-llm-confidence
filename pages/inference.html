@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence-Driven Inference | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html" class="active">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence-Driven Inference</h1>
+    <p>Online confidence control at candidate, state, and token levels (§4)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#output-selection">Output Selection</a></li>
+          <li><a href="#adaptive-stopping">Adaptive Stopping & Search</a></li>
+          <li><a href="#decoding-control">Decoding Control</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          At inference time, confidence shapes three critical decisions: (1) which candidate response to return 
+          (<strong>output selection</strong>), (2) when to stop generating or searching (<strong>adaptive stopping</strong>), 
+          and (3) how to shape the token distribution during decoding (<strong>decoding control</strong>).
+        </p>
+        <p>
+          Unlike training, which amortizes decisions across many examples, inference decisions are made online and 
+          immediately affect user experience. Confidence signals must be fast, interpretable, and reliable.
+        </p>
+      </section>
+
+      <section id="output-selection">
+        <h2>Output Selection</h2>
+        <p>
+          When multiple candidate responses are available (from beam search, sampling, or multi-turn generation), 
+          confidence scores decide which one to present to the user.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Self-Consistency</a></div>
+          <div class="paper-meta">Wang et al. · ICLR 2023</div>
+          <div class="paper-desc">Samples multiple reasoning paths and selects the most frequently occurring answer, using agreement as confidence.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: candidate</span>
+            <span class="badge badge-role">Role: vote</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CISC: P(True) Weighted Voting</a></div>
+          <div class="paper-meta">Taubenfeld et al. · ACL Findings 2025</div>
+          <div class="paper-desc">Weights votes by the model's implicit confidence P(true) in each reasoning path, improving selection accuracy.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: path</span>
+            <span class="badge badge-role">Role: weighted vote</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Universal Self-Consistency</a></div>
+          <div class="paper-meta">Chen et al. · 2023</div>
+          <div class="paper-desc">Trains model to select its own most consistent response without external voting, embedding confidence selection.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: response</span>
+            <span class="badge badge-role">Role: select</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ACR: SC Frequency + Ambiguity Re-Scoring</a></div>
+          <div class="paper-meta">Jeong & Choi · 2025</div>
+          <div class="paper-desc">Combines self-consistency frequency with ambiguity detection to re-score answers, improving selection robustness.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: trigger, rescore</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">PRM: Step-Level Process Reward</a></div>
+          <div class="paper-meta">Lightman et al. · ICLR 2024</div>
+          <div class="paper-desc">Auxiliary reward model that scores each step in a reasoning path, then reranks complete solutions by accumulated rewards.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: step/solution</span>
+            <span class="badge badge-role">Role: rerank</span>
+            <span class="badge badge-access">Access: AV, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Math-Shepherd: Auto Process Labels</a></div>
+          <div class="paper-meta">Wang et al. · ACL 2024</div>
+          <div class="paper-desc">Automatically generates step-level labels for solutions, enabling training of process rewards for selection.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: step/solution</span>
+            <span class="badge badge-role">Role: rerank</span>
+            <span class="badge badge-access">Access: AV, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SteerConf: Steered Verbal Confidence</a></div>
+          <div class="paper-meta">Zhou et al. · NeurIPS 2025</div>
+          <div class="paper-desc">Elicits and calibrates verbal confidence from models, using it to select best responses in diverse settings.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: calibrate, select</span>
+            <span class="badge badge-access">Access: BB</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="adaptive-stopping">
+        <h2>Adaptive Stopping & Search</h2>
+        <p>
+          Instead of generating a fixed number of samples or search steps, confidence can decide when enough exploration 
+          has been done and it is safe to commit to a solution.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Adaptive-Consistency</a></div>
+          <div class="paper-meta">Aggarwal et al. · EMNLP 2023</div>
+          <div class="paper-desc">Stops generating additional reasoning paths once the majority answer achieves stable agreement.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer set</span>
+            <span class="badge badge-role">Role: stop</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Efficient TTS: Calibrated Response Confidence</a></div>
+          <div class="paper-meta">Huang et al. · 2025</div>
+          <div class="paper-desc">Uses calibrated confidence estimates to determine when to stop voting and commit to the selected answer.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: candidate</span>
+            <span class="badge badge-role">Role: vote, stop</span>
+            <span class="badge badge-access">Access: MS, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">DeepConf: Lowest-Group Logprob</a></div>
+          <div class="paper-meta">Fu et al. · 2025</div>
+          <div class="paper-desc">Monitors the confidence of low-probability tokens in generation; stops or filters when confidence drops below threshold.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token group</span>
+            <span class="badge badge-role">Role: filter, stop</span>
+            <span class="badge badge-access">Access: WB, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Firm-or-Fickle: Answer-Token Probability</a></div>
+          <div class="paper-meta">Li et al. · ACL Findings 2025</div>
+          <div class="paper-desc">Compares answer-level vs. token-level probabilities to decide whether to maintain the answer or revise it.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: response/turn</span>
+            <span class="badge badge-role">Role: maintain, revise</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ToT: Self-Value/Vote for Thought States</a></div>
+          <div class="paper-meta">Yao et al. · NeurIPS 2023</div>
+          <div class="paper-desc">Scores intermediate reasoning states with value or voting confidence; expands promising branches and prunes low-confidence ones.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: thought state</span>
+            <span class="badge badge-role">Role: expand, prune</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConCISE: Reflection Confidence</a></div>
+          <div class="paper-meta">Qiao et al. · EMNLP 2025</div>
+          <div class="paper-desc">Uses confidence in self-reflection steps to decide whether to stop iterating or compress the trajectory.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: step/trajectory</span>
+            <span class="badge badge-role">Role: stop, compress</span>
+            <span class="badge badge-access">Access: FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="decoding-control">
+        <h2>Decoding Control</h2>
+        <p>
+          Rather than selecting finished outputs, these methods reshape the token distribution during generation 
+          based on confidence signals.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Contrastive Decoding</a></div>
+          <div class="paper-meta">Li et al. · ACL 2023</div>
+          <div class="paper-desc">Reweights tokens by the gap between expert and amateur model logits, boosting confident expert predictions.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: token</span>
+            <span class="badge badge-role">Role: reweight</span>
+            <span class="badge badge-access">Access: 2M</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">DoLa: Decoding by Contrasting Layers</a></div>
+          <div class="paper-meta">Chuang et al. · ICLR 2024</div>
+          <div class="paper-desc">Contrasts predictions from early and late layers to identify confident, factual tokens.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token</span>
+            <span class="badge badge-role">Role: reweight</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Delta-CD: Masked-Context Contrast</a></div>
+          <div class="paper-meta">Huang & Chen · 2025</div>
+          <div class="paper-desc">Contrasts model behavior with/without context masking to detect factual (context-dependent) tokens.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token</span>
+            <span class="badge badge-role">Role: reweight</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CoCoA: Prior-Context Conflict Detection</a></div>
+          <div class="paper-meta">Khandelwal et al. · EMNLP 2025</div>
+          <div class="paper-desc">Identifies tokens where prior and context disagree, blending confidences to improve factuality.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: token</span>
+            <span class="badge badge-role">Role: blend, reweight</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ActLCD: Learned Contrast Trigger</a></div>
+          <div class="paper-meta">Zhang et al. · EMNLP 2025</div>
+          <div class="paper-desc">Trains a gate to selectively apply contrastive decoding when model confidence is low.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token</span>
+            <span class="badge badge-role">Role: gate, reweight</span>
+            <span class="badge badge-access">Access: WB, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CABS: Sub-Structure Confidence</a></div>
+          <div class="paper-meta">Wei et al. · 2024</div>
+          <div class="paper-desc">Scores sub-structures (phrases, clauses) by confidence and reranks beam hypotheses accordingly.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: sub-structure</span>
+            <span class="badge badge-role">Role: beam rerank</span>
+            <span class="badge badge-access">Access: WB, FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="6">Output Selection</td>
+              </tr>
+              <tr>
+                <td>Self-Consistency</td>
+                <td>Self</td>
+                <td>Answer agreement</td>
+                <td>Candidate</td>
+                <td>Vote</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>CISC</td>
+                <td>Self</td>
+                <td>Path P(true)</td>
+                <td>Path</td>
+                <td>Weighted vote</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>Universal SC</td>
+                <td>Self</td>
+                <td>Self-selection</td>
+                <td>Response</td>
+                <td>Select</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>ACR</td>
+                <td>Self</td>
+                <td>SC + ambiguity</td>
+                <td>Answer</td>
+                <td>Trigger, rescore</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>PRM</td>
+                <td>Auxiliary</td>
+                <td>Step rewards</td>
+                <td>Step/solution</td>
+                <td>Rerank</td>
+                <td>AV, MS</td>
+              </tr>
+              <tr>
+                <td>Math-Shepherd</td>
+                <td>Auxiliary</td>
+                <td>Process labels</td>
+                <td>Step/solution</td>
+                <td>Rerank</td>
+                <td>AV, MS</td>
+              </tr>
+              <tr>
+                <td>SteerConf</td>
+                <td>Self</td>
+                <td>Verbal confidence</td>
+                <td>Answer</td>
+                <td>Calibrate, select</td>
+                <td>BB</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Adaptive Stopping & Search</td>
+              </tr>
+              <tr>
+                <td>Adaptive-Consistency</td>
+                <td>Self</td>
+                <td>Answer stability</td>
+                <td>Answer set</td>
+                <td>Stop</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>Efficient TTS</td>
+                <td>Self</td>
+                <td>Response confidence</td>
+                <td>Candidate</td>
+                <td>Vote, stop</td>
+                <td>MS, FT</td>
+              </tr>
+              <tr>
+                <td>DeepConf</td>
+                <td>Self</td>
+                <td>Low-prob tokens</td>
+                <td>Token group</td>
+                <td>Filter, stop</td>
+                <td>WB, MS</td>
+              </tr>
+              <tr>
+                <td>Firm-or-Fickle</td>
+                <td>Self</td>
+                <td>Answer vs. token prob</td>
+                <td>Response/turn</td>
+                <td>Maintain, revise</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>ToT</td>
+                <td>Self</td>
+                <td>State value/vote</td>
+                <td>Thought state</td>
+                <td>Expand, prune</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>ConCISE</td>
+                <td>Self</td>
+                <td>Reflection confidence</td>
+                <td>Step/trajectory</td>
+                <td>Stop, compress</td>
+                <td>FT</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Decoding Control</td>
+              </tr>
+              <tr>
+                <td>Contrastive Decoding</td>
+                <td>Hybrid</td>
+                <td>Expert-amateur gap</td>
+                <td>Token</td>
+                <td>Reweight</td>
+                <td>2M</td>
+              </tr>
+              <tr>
+                <td>DoLa</td>
+                <td>Self</td>
+                <td>Layer contrast</td>
+                <td>Token</td>
+                <td>Reweight</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>Delta-CD</td>
+                <td>Self</td>
+                <td>Masked-context gap</td>
+                <td>Token</td>
+                <td>Reweight</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>CoCoA</td>
+                <td>Hybrid</td>
+                <td>Prior-context conflict</td>
+                <td>Token</td>
+                <td>Blend, reweight</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>ActLCD</td>
+                <td>Self</td>
+                <td>Learned trigger</td>
+                <td>Token</td>
+                <td>Gate, reweight</td>
+                <td>WB, FT</td>
+              </tr>
+              <tr>
+                <td>CABS</td>
+                <td>Self</td>
+                <td>Sub-structure confidence</td>
+                <td>Sub-structure</td>
+                <td>Beam rerank</td>
+                <td>WB, FT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+          <strong>Access legend:</strong> MS = multiple samples, WB = white-box (internal states), 
+          FT = fine-tuned, AV = auxiliary verifier, BB = black-box
+        </p>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          Inference confidence operates at three distinct time scales:
+        </p>
+        <ul>
+          <li>
+            <strong>Candidate → Select/Aggregate.</strong> Given multiple complete outputs (from sampling or beam search), 
+            confidence decides which to return or how to aggregate. Self-consistency and process rewards both operate here.
+          </li>
+          <li>
+            <strong>State → Continue/Stop/Revise.</strong> At intermediate points (after each token, thought, or step), 
+            confidence decides whether to commit (stop), continue exploring (expand), or reconsider (revise). Tree-of-Thought 
+            and adaptive consistency exemplify this layer.
+          </li>
+          <li>
+            <strong>Token → Reshape Distribution.</strong> Within a single forward pass, confidence reshapes logit distributions 
+            to boost high-confidence tokens and suppress hallucinations. Contrastive decoding and DoLa operate here.
+          </li>
+        </ul>
+        <p>
+          These signals are <strong>not interchangeable</strong>. A high self-consistency score does not imply high logit probability. 
+          A low-confidence token can still occur in a high-confidence reasoning path. The best systems leverage signals at all three 
+          levels, with careful calibration to avoid redundancy and propagation of errors.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

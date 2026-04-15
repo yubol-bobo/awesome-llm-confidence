@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unified Definition and Notation | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html" class="active">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Unified Definition and Notation</h1>
+    <p>A single abstraction for confidence as a control signal (§2)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#decision-state">Decision State & Units</a></li>
+          <li><a href="#confidence-signal">Confidence Signal</a></li>
+          <li><a href="#decision-process">Decision Process</a></li>
+          <li><a href="#three-axes">Three Axes</a></li>
+          <li><a href="#lifecycle">Lifecycle</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Confidence is used broadly across LLM systems in many forms: probability-like estimates, uncertainty scores, 
+          log-probability quantities, verbalized confidence, sample-agreement metrics, semantic uncertainty, verifier/judge/reward-model scores, 
+          or hybrids combining multiple sources. Despite this diversity, these signals share a common operational feature: 
+          each must affect a downstream decision to be useful in control.
+        </p>
+        <p>
+          This framework abstracts away the surface-level differences and focuses on the functional role of confidence as a 
+          <strong>control signal</strong> that transforms decision states and shapes which actions are taken.
+        </p>
+      </section>
+
+      <section id="decision-state">
+        <h2>Decision State & Units</h2>
+        <p>
+          At any step $t$ in a generative process, we have a <strong>decision state</strong> that captures the context:
+        </p>
+        <div class="math-block">
+          $$\xi_t = \text{(query, partial generation, candidates, evidence, tools, memory, budget)}$$
+        </div>
+        <p>
+          Given this state, we must choose among discrete <strong>decision units</strong> $U_t = \{u_1, u_2, \ldots, u_n\}$. 
+          The unit granularity varies by application:
+        </p>
+        <ul>
+          <li><strong>token</strong> — next word in decoding</li>
+          <li><strong>span</strong> — consecutive tokens or phrases</li>
+          <li><strong>claim</strong> — atomic fact or statement</li>
+          <li><strong>chunk</strong> — passage or document segment</li>
+          <li><strong>example</strong> — training or demonstration instance</li>
+          <li><strong>response</strong> — complete answer or turn</li>
+          <li><strong>model/tool</strong> — expert or module to invoke</li>
+          <li><strong>step</strong> — action in a trajectory or plan</li>
+          <li><strong>trajectory</strong> — complete sequence of actions</li>
+          <li><strong>vote</strong> — aggregate choice in multi-sample voting</li>
+        </ul>
+      </section>
+
+      <section id="confidence-signal">
+        <h2>Confidence Signal</h2>
+        <p>
+          A <strong>confidence signal</strong> is any reliability-relevant score or distribution produced by the model or auxiliary system. 
+          In its most general form:
+        </p>
+        <div class="math-block">
+          $$\kappa_t(u; \xi_t) \in \mathbb{R}^m$$
+        </div>
+        <p>
+          This signal is a vector (possibly $m=1$) that quantifies how much to trust, weight, or pursue each decision unit $u$ 
+          given the current state $\xi_t$. Sources include:
+        </p>
+        <ul>
+          <li><strong>Self</strong> — token log-probabilities, hidden states, verbalized uncertainty</li>
+          <li><strong>Sample-based</strong> — agreement across multiple samples, semantic entropy, consistency scores</li>
+          <li><strong>Auxiliary</strong> — verifier scores, reward-model outputs, router predictions, judge decisions</li>
+          <li><strong>External</strong> — retrieval relevance, tool execution success, environment feedback</li>
+          <li><strong>Hybrid</strong> — combinations of the above</li>
+        </ul>
+      </section>
+
+      <section id="decision-process">
+        <h2>Decision Process</h2>
+        <p>
+          The pipeline from state to action flows through four stages:
+        </p>
+        <div class="pipeline">
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Decision State</div>
+            <div class="pipeline-symbol">ξ<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Decision Units</div>
+            <div class="pipeline-symbol">U<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Score</div>
+            <div class="pipeline-symbol">κ<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Transform</div>
+            <div class="pipeline-symbol">T̃<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Policy</div>
+            <div class="pipeline-symbol">δ<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Action</div>
+            <div class="pipeline-symbol">a<sub>t</sub></div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="pipeline-label">Updated State</div>
+            <div class="pipeline-symbol">ξ<sub>t+1</sub></div>
+          </div>
+        </div>
+        <p style="margin-top: 2rem;">
+          <strong>Key steps:</strong>
+        </p>
+        <ul>
+          <li><strong>Transform $T̃_t$:</strong> Normalize, calibrate, or combine confidence signals. Examples: softmax (for selection), 
+            clipping (for filtering), weighted averaging (for fusion).</li>
+          <li><strong>Policy $\delta_t$:</strong> Map transformed scores to a decision rule. Examples: argmax (select highest), threshold 
+            (filter below cutoff), softmax-sample (probabilistic), or defer (abstain).</li>
+          <li><strong>Action $a_t$:</strong> Execute the policy to commit to one unit or a set of units.</li>
+          <li><strong>Updated state $\xi_{t+1}$:</strong> Incorporates action outcome and feeds forward.</li>
+        </ul>
+      </section>
+
+      <section id="three-axes">
+        <h2>Three Axes of Variation</h2>
+        <p>
+          Confidence systems vary along three independent dimensions. Understanding these axes helps map papers and 
+          design new methods systematically.
+        </p>
+
+        <div class="axis-grid">
+          <div class="axis-card">
+            <h3>Axis 1: Source</h3>
+            <ul>
+              <li><strong>Self:</strong> Token probabilities, hidden states, verbalized estimates</li>
+              <li><strong>Sample-based:</strong> Disagreement, consistency, semantic entropy across samples</li>
+              <li><strong>Auxiliary:</strong> Verifier, reward model, router, judge, ensemble</li>
+              <li><strong>External:</strong> Retrieval, tools, environment, human labels</li>
+              <li><strong>Hybrid:</strong> Multiple sources combined or competing</li>
+            </ul>
+          </div>
+
+          <div class="axis-card">
+            <h3>Axis 2: Unit / Granularity</h3>
+            <ul>
+              <li><strong>Token:</strong> Single word in decoding</li>
+              <li><strong>Local:</strong> Phrase, claim, chunk, sentence</li>
+              <li><strong>Item/Candidate:</strong> Complete response or solution</li>
+              <li><strong>Model/Tool/Agent:</strong> Which expert to invoke</li>
+              <li><strong>Step:</strong> Individual action in a trajectory</li>
+              <li><strong>Trajectory/Episode:</strong> Full sequence of decisions</li>
+            </ul>
+          </div>
+
+          <div class="axis-card">
+            <h3>Axis 3: Functional Role</h3>
+            <ul>
+              <li><strong>Selection:</strong> Choose best among candidates</li>
+              <li><strong>Weighting:</strong> Probabilistic or aggregate combination</li>
+              <li><strong>Allocation:</strong> Distribute budget (compute, samples, context)</li>
+              <li><strong>Control-flow:</strong> Decide whether to continue, stop, revise, or escalate</li>
+              <li><strong>Aggregation:</strong> Combine outputs from multiple sources or agents</li>
+              <li><strong>Learning signal:</strong> Supervise or weight training data</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="lifecycle">
+        <h2>Lifecycle: From Training to Deployment</h2>
+        <p>
+          This framework specializes across the six domains covered in the survey:
+        </p>
+        <ul>
+          <li>
+            <strong>Training (§3):</strong> Confidence selects training examples and weights gradients. Sources: self-confidence 
+            (answer likelihood), auxiliary (judge/verifier), hybrid (uncertainty + influence). Units: examples, tokens, preferences. 
+            Role: learning signal allocation and supervision quality control.
+          </li>
+          <li>
+            <strong>Inference (§4):</strong> Confidence shapes next-token distribution, when to stop generation, and which candidate 
+            to select. Sources: self (logprobs, verbalized, semantic entropy), auxiliary (PRM). Units: tokens, answers, steps. 
+            Role: decoding control, stopping, output selection.
+          </li>
+          <li>
+            <strong>Routing (§5):</strong> Confidence predicts query suitability (pre-call) or answer quality (post-hoc) for cascading 
+            or model selection. Sources: auxiliary (routers), self (calibrated), hybrid (score gap). Units: queries, answers. 
+            Role: deferral, escalation, portfolio orchestration.
+          </li>
+          <li>
+            <strong>RAG (§6):</strong> Confidence determines whether to retrieve, what context to keep, and whether to abstain. 
+            Sources: self (low-token confidence triggers retrieval), auxiliary (retrieval quality), hybrid (consistency + relevance). 
+            Units: tokens/sentences (trigger), documents/passages (filter), queries (routing). 
+            Role: retrieval triggering, context filtering, groundedness checking.
+          </li>
+          <li>
+            <strong>Risk (§7):</strong> Confidence detects hallucinations, calibrates predictions, and enables conformal guarantees 
+            and abstention. Sources: self (semantic entropy, self-check), auxiliary (probes, verifiers), hybrid (calibrated predictor). 
+            Units: claims, answers. Role: hallucination detection, coverage guarantees, reliability certification.
+          </li>
+          <li>
+            <strong>Agentic (§8):</strong> Confidence guides search (MCTS with PRMs), triggers escalation and backtracking, aggregates 
+            multi-agent votes. Sources: auxiliary (verifiers, rewards), peer (voting), self (intrinsic verification). 
+            Units: steps, trajectories, responses. Role: search guidance, control flow, consensus and escalation.
+          </li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

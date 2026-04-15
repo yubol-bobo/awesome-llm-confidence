@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence-Guided Model Selection | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html" class="active">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence-Guided Model Selection</h1>
+    <p>Routing, cascading, and deferral across model portfolios (§5)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#sequential-cascading">Sequential Cascading</a></li>
+          <li><a href="#pre-call-routing">Pre-Call Routing</a></li>
+          <li><a href="#hybrid-systems">Hybrid Systems</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Model selection across a portfolio (small+fast vs. large+accurate, or specialized experts) requires deciding 
+          <strong>when to escalate</strong> and <strong>to whom</strong>. Confidence provides the control signal: low confidence 
+          in a cheaper model triggers deferral to a larger one; high confidence may allow short-circuiting, avoiding the expense.
+        </p>
+        <p>
+          We distinguish three timing patterns: (1) <strong>sequential cascading</strong> — run a fast model, defer to slower models 
+          based on confidence, (2) <strong>pre-call routing</strong> — decide the target model before calling any, and 
+          (3) <strong>hybrid systems</strong> — combine both ex-ante pruning and post-hoc escalation.
+        </p>
+      </section>
+
+      <section id="sequential-cascading">
+        <h2>Sequential Cascading</h2>
+        <p>
+          Start with a cheap or fast model. If confidence is low, defer the query to a larger or more specialized model.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">LM Cascades: Token-Uncertainty Quantiles</a></div>
+          <div class="paper-meta">Gupta et al. · 2024</div>
+          <div class="paper-desc">Uses token-level uncertainty quantiles to decide when to cascade from small to larger models.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: defer</span>
+            <span class="badge badge-access">Access: Post</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">FrugalGPT: Cost-Aware Orchestration</a></div>
+          <div class="paper-meta">Chen et al. · 2023</div>
+          <div class="paper-desc">Orchestrates a portfolio of models (GPT-3, Davinci, etc.) with cost-aware cascading based on confidence.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: query/answer</span>
+            <span class="badge badge-role">Role: route, defer</span>
+            <span class="badge badge-access">Access: Post, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">AutoMix: Self-Verification Entailment + POMDP</a></div>
+          <div class="paper-meta">Madaan et al. · NeurIPS 2024</div>
+          <div class="paper-desc">Uses self-verification (entailment checks) and POMDP to decide whether to escalate or finalize an answer.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: defer</span>
+            <span class="badge badge-access">Access: Post, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Gatekeeper: Confidence Tuning for Deferral</a></div>
+          <div class="paper-meta">Rabanser et al. · NeurIPS 2025</div>
+          <div class="paper-desc">Tunes confidence thresholds per model to optimize cost-accuracy tradeoffs in cascading.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: defer</span>
+            <span class="badge badge-access">Access: Post, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Rational Tuning: Calibrated Confidence + Copula</a></div>
+          <div class="paper-meta">Zellinger & Thomson · TMLR 2025</div>
+          <div class="paper-desc">Models confidence dependencies across stages using copulas; optimizes stopping rules for cascades.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: stage</span>
+            <span class="badge badge-role">Role: stop</span>
+            <span class="badge badge-access">Access: Post</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Speculative Cascading: Speculative Deferral</a></div>
+          <div class="paper-meta">Narasimhan et al. · 2024</div>
+          <div class="paper-desc">Speculatively generates with small models, deferring uncertain tokens/steps to larger ones in mid-generation.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: token/stage</span>
+            <span class="badge badge-role">Role: handoff, stop</span>
+            <span class="badge badge-access">Access: Mid</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="pre-call-routing">
+        <h2>Pre-Call Routing</h2>
+        <p>
+          Before calling any model, use predicted suitability confidence to route the query to the best-fit model.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">OptLLM: Bootstrap Suitability Uncertainty</a></div>
+          <div class="paper-meta">Liu et al. · ICWS 2024</div>
+          <div class="paper-desc">Bootstraps model suitability scores with uncertainty estimates to route queries before execution.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: route</span>
+            <span class="badge badge-access">Access: Pre, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">RouteLLM: Preference-Trained Routers</a></div>
+          <div class="paper-meta">Ong et al. · 2024</div>
+          <div class="paper-desc">Trains routers on preference data to predict which model is best for a query.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: route</span>
+            <span class="badge badge-access">Access: Pre, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Hybrid LLM: Predicted Quality Gap</a></div>
+          <div class="paper-meta">Ding et al. · ICLR 2024</div>
+          <div class="paper-desc">Predicts the quality gap between models and uses it to route queries to the cheapest sufficient model.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: route</span>
+            <span class="badge badge-access">Access: Pre, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CARGO: Score Gap + Tie-Break</a></div>
+          <div class="paper-meta">Barrak et al. · 2025</div>
+          <div class="paper-desc">Uses judge/auxiliary confidence in score differences to route; applies tie-breaking rules for close calls.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: route</span>
+            <span class="badge badge-access">Access: Pre, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Semantic Entropy Routing: SE Triggers Cloud Offload</a></div>
+          <div class="paper-meta">Zhang et al. · 2025</div>
+          <div class="paper-desc">Uses semantic entropy to detect when edge inference is uncertain, triggering offload to cloud model.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: offload</span>
+            <span class="badge badge-access">Access: Post, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Self-REF: Confidence-Token Probability</a></div>
+          <div class="paper-meta">Chuang et al. · ICML 2025</div>
+          <div class="paper-desc">Combines verbal confidence and token probabilities to route uncertain queries or suggest rejection.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: route, reject</span>
+            <span class="badge badge-access">Access: Post, FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="hybrid-systems">
+        <h2>Hybrid Systems</h2>
+        <p>
+          The best production systems combine ex-ante routing (before execution) with post-hoc escalation 
+          (based on observed answer confidence).
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Unified Routing & Cascading: Ex-Ante + Post-Hoc Quality</a></div>
+          <div class="paper-meta">Dekoninck et al. · 2024</div>
+          <div class="paper-desc">Integrates predicted query suitability (pre-call) with observed answer quality (post-hoc) for unified control.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: query/answer</span>
+            <span class="badge badge-role">Role: route, defer</span>
+            <span class="badge badge-access">Access: Pre, Post</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Select-Then-Route: Taxonomy + Judge Agreement</a></div>
+          <div class="paper-meta">Shah & Shridhar · EMNLP Industry 2025</div>
+          <div class="paper-desc">First shortlists candidates via taxonomy matching, then ranks via judge agreement confidence.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: query/answer</span>
+            <span class="badge badge-role">Role: shortlist, defer</span>
+            <span class="badge badge-access">Access: Pre, Post, Aux</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="6">Sequential Cascading</td>
+              </tr>
+              <tr>
+                <td>LM Cascades</td>
+                <td>Self</td>
+                <td>Token uncertainty quantiles</td>
+                <td>Answer</td>
+                <td>Defer</td>
+                <td>Post</td>
+              </tr>
+              <tr>
+                <td>FrugalGPT</td>
+                <td>External</td>
+                <td>Cost-aware confidence</td>
+                <td>Query/answer</td>
+                <td>Route, defer</td>
+                <td>Post, Aux</td>
+              </tr>
+              <tr>
+                <td>AutoMix</td>
+                <td>Hybrid</td>
+                <td>Self-verification</td>
+                <td>Answer</td>
+                <td>Defer</td>
+                <td>Post, Aux</td>
+              </tr>
+              <tr>
+                <td>Gatekeeper</td>
+                <td>Self</td>
+                <td>Tuned thresholds</td>
+                <td>Answer</td>
+                <td>Defer</td>
+                <td>Post, FT</td>
+              </tr>
+              <tr>
+                <td>Rational Tuning</td>
+                <td>Self</td>
+                <td>Copula confidence</td>
+                <td>Stage</td>
+                <td>Stop</td>
+                <td>Post</td>
+              </tr>
+              <tr>
+                <td>Speculative Cascading</td>
+                <td>Hybrid</td>
+                <td>Token/step confidence</td>
+                <td>Token/stage</td>
+                <td>Handoff, stop</td>
+                <td>Mid</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Pre-Call Routing</td>
+              </tr>
+              <tr>
+                <td>OptLLM</td>
+                <td>External</td>
+                <td>Suitability uncertainty</td>
+                <td>Query</td>
+                <td>Route</td>
+                <td>Pre, Aux</td>
+              </tr>
+              <tr>
+                <td>RouteLLM</td>
+                <td>External</td>
+                <td>Router prediction</td>
+                <td>Query</td>
+                <td>Route</td>
+                <td>Pre, Aux</td>
+              </tr>
+              <tr>
+                <td>Hybrid LLM</td>
+                <td>External</td>
+                <td>Quality gap prediction</td>
+                <td>Query</td>
+                <td>Route</td>
+                <td>Pre, Aux</td>
+              </tr>
+              <tr>
+                <td>CARGO</td>
+                <td>Auxiliary</td>
+                <td>Score gap + tie-break</td>
+                <td>Query</td>
+                <td>Route</td>
+                <td>Pre, Aux</td>
+              </tr>
+              <tr>
+                <td>Semantic Entropy Routing</td>
+                <td>Self</td>
+                <td>Semantic entropy</td>
+                <td>Answer</td>
+                <td>Offload</td>
+                <td>Post, MS</td>
+              </tr>
+              <tr>
+                <td>Self-REF</td>
+                <td>Self</td>
+                <td>Confidence + token prob</td>
+                <td>Answer</td>
+                <td>Route, reject</td>
+                <td>Post, FT</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Hybrid Systems</td>
+              </tr>
+              <tr>
+                <td>Unified Routing & Cascading</td>
+                <td>Hybrid</td>
+                <td>Ex-ante + post-hoc quality</td>
+                <td>Query/answer</td>
+                <td>Route, defer</td>
+                <td>Pre, Post</td>
+              </tr>
+              <tr>
+                <td>Select-Then-Route</td>
+                <td>Hybrid</td>
+                <td>Taxonomy + judge agreement</td>
+                <td>Query/answer</td>
+                <td>Shortlist, defer</td>
+                <td>Pre, Post, Aux</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          Routing systems must account for <strong>timing</strong>, <strong>signal type</strong>, and <strong>cost tradeoffs</strong>:
+        </p>
+        <ul>
+          <li>
+            <strong>Pre-call routing</strong> uses predicted suitability, which is inherently uncertain. Threshold tuning and 
+            cost-aware optimization become critical. Methods like OptLLM, RouteLLM, and Hybrid LLM all invest in training or 
+            bootstrapping better predictors.
+          </li>
+          <li>
+            <strong>Post-hoc cascading</strong> uses observed answer confidence, which is more direct but comes after the cost 
+            of the first model is already incurred. Works best when the cheap model succeeds often; escalation is the exception.
+          </li>
+          <li>
+            <strong>Mid-generation routing</strong> (speculative cascading) combines both: run a fast model with speculative 
+            execution, defer mid-stream if confidence drops. Balances latency and cost.
+          </li>
+        </ul>
+        <p>
+          <strong>Best practice:</strong> Layer ex-ante pruning (filter out clearly-wrong models before execution), 
+          post-hoc checking (catch failures from chosen model), and selective escalation (deferred execution only when necessary).
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

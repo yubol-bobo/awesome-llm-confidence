@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence-Based Risk Management | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html" class="active">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence-Based Risk Management</h1>
+    <p>Detection, coverage, and abstention for reliable LLM deployment (§7)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#actionable-signals">Actionable Signals</a></li>
+          <li><a href="#hallucination-detection">Hallucination Detection</a></li>
+          <li><a href="#conformal-guarantees">Conformal Guarantees</a></li>
+          <li><a href="#abstention">Abstention & Alignment</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Deployment requires managing risk: detecting when models are wrong or hallucinating, quantifying uncertainty with 
+          formal guarantees, and deciding when to abstain rather than guess. Confidence is the primary signal for all three.
+        </p>
+        <p>
+          Three complementary objectives drive this section: (1) <strong>calibration</strong> — confidence should reflect true 
+          accuracy, (2) <strong>selective reliability</strong> — using confidence to flag uncertain predictions, and 
+          (3) <strong>conformal coverage</strong> — formal guarantees that predictions or abstentions cover the truth.
+        </p>
+      </section>
+
+      <section id="actionable-signals">
+        <h2>Actionable Signals</h2>
+        <p>
+          Before detecting failures, we must first elicit reliable confidence signals from models.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">P(True) / P(IK): Self-Knowledge Formulations</a></div>
+          <div class="paper-meta">Kadavath et al. · 2022</div>
+          <div class="paper-desc">Asks models directly for P(True) or P(I know), using verbal confidence as a reliability signal.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer/query</span>
+            <span class="badge badge-role">Role: elicit</span>
+            <span class="badge badge-access">Access: Pr</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Just Ask: Verbal Confidence</a></div>
+          <div class="paper-meta">Tian et al. · EMNLP 2023</div>
+          <div class="paper-desc">Elicits verbal confidence statements; calibrates them to predict accuracy on held-out tasks.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: elicit, calibrate</span>
+            <span class="badge badge-access">Access: Pr</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">VUF / MUC: Verbal-Semantic Mismatch</a></div>
+          <div class="paper-meta">Ji et al. · 2025</div>
+          <div class="paper-desc">Detects mismatch between verbalized uncertainty and semantic representations in hidden states.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: hidden state</span>
+            <span class="badge badge-role">Role: detect, steer</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">UExpr Consistency: Uncertain-Expression Consistency</a></div>
+          <div class="paper-meta">Joo et al. · 2025</div>
+          <div class="paper-desc">Measures consistency between uncertain expressions in text and token-level confidence signals.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: BB</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="hallucination-detection">
+        <h2>Hallucination Detection</h2>
+        <p>
+          Using confidence-based signals to detect when models generate false or unsupported claims.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SelfCheckGPT: Inter-Sample Consistency</a></div>
+          <div class="paper-meta">Manakul et al. · EMNLP 2023</div>
+          <div class="paper-desc">Samples multiple responses and flags sentences where agreement is low as potentially hallucinated.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: sentence</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: BB, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Semantic Entropy: Entropy Over Meaning Clusters</a></div>
+          <div class="paper-meta">Farquhar et al. · Nature 2024</div>
+          <div class="paper-desc">Clusters semantic meanings of samples and uses entropy over clusters to detect hallucinations.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer set</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SEPs: Probed Semantic Entropy</a></div>
+          <div class="paper-meta">Han et al. · ICML Workshop 2024</div>
+          <div class="paper-desc">Uses mechanistic probes to compute semantic entropy without sampling; detects uncertainty efficiently.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: hidden state</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">INSIDE: EigenScore + Clipping</a></div>
+          <div class="paper-meta">Chen et al. · ICLR 2024</div>
+          <div class="paper-desc">Uses eigenvalue-based scoring of activation matrices to detect hallucinations without sampling.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: hidden state</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Internal State: Truth Probe</a></div>
+          <div class="paper-meta">Azaria & Mitchell · EMNLP Findings 2023</div>
+          <div class="paper-desc">Trains probes on internal states to detect whether models believe their own statements (truthfulness).</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: statement</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="conformal-guarantees">
+        <h2>Conformal Guarantees</h2>
+        <p>
+          Formal coverage guarantees: confidence-based prediction sets or filtering that maintain user-specified error rates.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">MCQA CP: Option Nonconformity</a></div>
+          <div class="paper-meta">Kumar et al. · 2023</div>
+          <div class="paper-desc">Applies conformal prediction to multiple-choice QA; outputs sets of answers with coverage guarantees.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer set</span>
+            <span class="badge badge-role">Role: set-predict</span>
+            <span class="badge badge-access">Access: CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Conformal LM: Sampling + Rejection</a></div>
+          <div class="paper-meta">Quach et al. · ICLR 2024</div>
+          <div class="paper-desc">Uses conformal prediction with sampling and rejection to construct output sets with formal coverage.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: output set</span>
+            <span class="badge badge-role">Role: set-predict, filter</span>
+            <span class="badge badge-access">Access: MS, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Conformal Factuality: Entailment-Based Claim Filter</a></div>
+          <div class="paper-meta">Mohri & Hashimoto · ICML 2024</div>
+          <div class="paper-desc">Filters claims using conformal entailment scores; guarantees factuality at desired coverage level.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: claim</span>
+            <span class="badge badge-role">Role: filter, back off</span>
+            <span class="badge badge-access">Access: CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Enhanced CP: Conditional Factuality</a></div>
+          <div class="paper-meta">Cherian et al. · NeurIPS 2024</div>
+          <div class="paper-desc">Extends conformal prediction with conditional guarantees on claim-level factuality.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: claim</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Coherent Factuality: Graph-Structured Conformal</a></div>
+          <div class="paper-meta">Rubin-Toles et al. · ICLR 2025</div>
+          <div class="paper-desc">Applies conformal prediction to claim graphs, maintaining coherence and coverage guarantees.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: claim graph</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">API-Only CP: Sample Frequency + Similarity</a></div>
+          <div class="paper-meta">Su et al. · EMNLP Findings 2024</div>
+          <div class="paper-desc">Implements conformal prediction using only API access by leveraging sample frequency and similarity.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: answer set</span>
+            <span class="badge badge-role">Role: set-predict</span>
+            <span class="badge badge-access">Access: API, MS, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConfTS: Conformal Temperature Scaling</a></div>
+          <div class="paper-meta">Xi et al. · TMLR 2025</div>
+          <div class="paper-desc">Calibrates temperature scaling via conformal methods, ensuring prediction set coverage.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: prediction set</span>
+            <span class="badge badge-role">Role: calibrate</span>
+            <span class="badge badge-access">Access: CP</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="abstention">
+        <h2>Abstention & Alignment</h2>
+        <p>
+          Training or adapting models to abstain when uncertain, improving reliability and alignment with human expectations.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Self-Evaluation: Token Self-Eval</a></div>
+          <div class="paper-meta">Ren et al. · NeurIPS Workshop 2023</div>
+          <div class="paper-desc">Models learn to evaluate their own answers token-by-token, signaling abstention when unsure.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: abstain, select</span>
+            <span class="badge badge-access">Access: Pr</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Adapt with Self-Eval: Adapted Self-Eval</a></div>
+          <div class="paper-meta">Chen et al. · EMNLP Findings 2023</div>
+          <div class="paper-desc">Fine-tunes models to improve self-evaluation signals specific to a task, enabling better abstention.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: abstain</span>
+            <span class="badge badge-access">Access: PE</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Selective Ambiguous QA: Repetition/Agreement</a></div>
+          <div class="paper-meta">Cole et al. · EMNLP 2023</div>
+          <div class="paper-desc">Uses repetition and multi-sample agreement to detect ambiguous questions; abstains for uncertain cases.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query/answer set</span>
+            <span class="badge badge-role">Role: abstain</span>
+            <span class="badge badge-access">Access: MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">R-Tuning: Parametric Knowledge Boundary</a></div>
+          <div class="paper-meta">Zhang et al. · NAACL 2024</div>
+          <div class="paper-desc">Fine-tunes models to recognize knowledge boundaries; abstains for out-of-distribution queries.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query/answer</span>
+            <span class="badge badge-role">Role: abstain, align</span>
+            <span class="badge badge-access">Access: FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SemEnt FT: Semantic Entropy Fine-Tuning</a></div>
+          <div class="paper-meta">Tjandra et al. · NeurIPS Workshop 2024</div>
+          <div class="paper-desc">Fine-tunes models to produce high semantic entropy when uncertain, enabling abstention.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: abstain, align</span>
+            <span class="badge badge-access">Access: FT, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConfTuner: Tokenized Brier Verbal Calibration</a></div>
+          <div class="paper-meta">Li et al. · NeurIPS 2025</div>
+          <div class="paper-desc">Calibrates verbal confidence via token-level Brier score loss, improving alignment with true accuracy.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: calibrate</span>
+            <span class="badge badge-access">Access: FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">FISCORE: Semantic Cluster Consensus RL</a></div>
+          <div class="paper-meta">An & Xu · 2025</div>
+          <div class="paper-desc">Uses RL with semantic clustering rewards to train models that abstain when sample consensus is low.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: answer sample</span>
+            <span class="badge badge-role">Role: abstain, align</span>
+            <span class="badge badge-access">Access: RL, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Activation-Based Abstention: FFN Activation Confidence</a></div>
+          <div class="paper-meta">Huang et al. · UncertaiNLP 2025</div>
+          <div class="paper-desc">Uses feed-forward network activation patterns to detect uncertainty; enables abstention without retraining.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: answer</span>
+            <span class="badge badge-role">Role: abstain</span>
+            <span class="badge badge-access">Access: WB</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="6">Actionable Signals</td>
+              </tr>
+              <tr>
+                <td>P(True) / P(IK)</td>
+                <td>Self</td>
+                <td>Verbal confidence</td>
+                <td>Answer/query</td>
+                <td>Elicit</td>
+                <td>Pr</td>
+              </tr>
+              <tr>
+                <td>Just Ask</td>
+                <td>Self</td>
+                <td>Verbal confidence</td>
+                <td>Answer</td>
+                <td>Elicit, calibrate</td>
+                <td>Pr</td>
+              </tr>
+              <tr>
+                <td>VUF / MUC</td>
+                <td>Mechanistic</td>
+                <td>Verbal-semantic mismatch</td>
+                <td>Hidden state</td>
+                <td>Detect, steer</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>UExpr Consistency</td>
+                <td>Self</td>
+                <td>Expression consistency</td>
+                <td>Answer</td>
+                <td>Detect</td>
+                <td>BB</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Hallucination Detection</td>
+              </tr>
+              <tr>
+                <td>SelfCheckGPT</td>
+                <td>Self</td>
+                <td>Sample agreement</td>
+                <td>Sentence</td>
+                <td>Detect</td>
+                <td>BB, MS</td>
+              </tr>
+              <tr>
+                <td>Semantic Entropy</td>
+                <td>Self</td>
+                <td>Semantic clustering entropy</td>
+                <td>Answer set</td>
+                <td>Detect</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>SEPs</td>
+                <td>Mechanistic</td>
+                <td>Probed entropy</td>
+                <td>Hidden state</td>
+                <td>Detect</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>INSIDE</td>
+                <td>Mechanistic</td>
+                <td>EigenScore</td>
+                <td>Hidden state</td>
+                <td>Detect</td>
+                <td>WB</td>
+              </tr>
+              <tr>
+                <td>Internal State</td>
+                <td>Mechanistic</td>
+                <td>Truth probe</td>
+                <td>Statement</td>
+                <td>Detect</td>
+                <td>WB</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Conformal Guarantees</td>
+              </tr>
+              <tr>
+                <td>MCQA CP</td>
+                <td>Self</td>
+                <td>Option nonconformity</td>
+                <td>Answer set</td>
+                <td>Set-predict</td>
+                <td>CP</td>
+              </tr>
+              <tr>
+                <td>Conformal LM</td>
+                <td>Self</td>
+                <td>Sampling + rejection</td>
+                <td>Output set</td>
+                <td>Set-predict, filter</td>
+                <td>MS, CP</td>
+              </tr>
+              <tr>
+                <td>Conformal Factuality</td>
+                <td>Hybrid</td>
+                <td>Entailment scores</td>
+                <td>Claim</td>
+                <td>Filter, back off</td>
+                <td>CP</td>
+              </tr>
+              <tr>
+                <td>Enhanced CP</td>
+                <td>Hybrid</td>
+                <td>Conditional factuality</td>
+                <td>Claim</td>
+                <td>Filter</td>
+                <td>CP</td>
+              </tr>
+              <tr>
+                <td>Coherent Factuality</td>
+                <td>Hybrid</td>
+                <td>Graph conformal</td>
+                <td>Claim graph</td>
+                <td>Filter</td>
+                <td>CP</td>
+              </tr>
+              <tr>
+                <td>API-Only CP</td>
+                <td>Hybrid</td>
+                <td>Sample frequency</td>
+                <td>Answer set</td>
+                <td>Set-predict</td>
+                <td>API, MS, CP</td>
+              </tr>
+              <tr>
+                <td>ConfTS</td>
+                <td>Self</td>
+                <td>Conformal calibration</td>
+                <td>Prediction set</td>
+                <td>Calibrate</td>
+                <td>CP</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Abstention & Alignment</td>
+              </tr>
+              <tr>
+                <td>Self-Evaluation</td>
+                <td>Self</td>
+                <td>Token self-eval</td>
+                <td>Answer</td>
+                <td>Abstain, select</td>
+                <td>Pr</td>
+              </tr>
+              <tr>
+                <td>Adapt with Self-Eval</td>
+                <td>Self</td>
+                <td>Adapted self-eval</td>
+                <td>Answer</td>
+                <td>Abstain</td>
+                <td>PE</td>
+              </tr>
+              <tr>
+                <td>Selective Ambiguous QA</td>
+                <td>Self</td>
+                <td>Repetition/agreement</td>
+                <td>Query/answer set</td>
+                <td>Abstain</td>
+                <td>MS</td>
+              </tr>
+              <tr>
+                <td>R-Tuning</td>
+                <td>Self</td>
+                <td>Knowledge boundary</td>
+                <td>Query/answer</td>
+                <td>Abstain, align</td>
+                <td>FT</td>
+              </tr>
+              <tr>
+                <td>SemEnt FT</td>
+                <td>Self</td>
+                <td>Semantic entropy</td>
+                <td>Answer</td>
+                <td>Abstain, align</td>
+                <td>FT, MS</td>
+              </tr>
+              <tr>
+                <td>ConfTuner</td>
+                <td>Self</td>
+                <td>Verbal confidence</td>
+                <td>Answer</td>
+                <td>Calibrate</td>
+                <td>FT</td>
+              </tr>
+              <tr>
+                <td>FISCORE</td>
+                <td>Self</td>
+                <td>Semantic consensus</td>
+                <td>Answer sample</td>
+                <td>Abstain, align</td>
+                <td>RL, MS</td>
+              </tr>
+              <tr>
+                <td>Activation-Based Abstention</td>
+                <td>Mechanistic</td>
+                <td>FFN activation</td>
+                <td>Answer</td>
+                <td>Abstain</td>
+                <td>WB</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+          <strong>Access legend:</strong> Pr = prompt, BB = black-box, PE = prompt engineering, 
+          FT = fine-tuned, WB = white-box, MS = multiple samples, CP = conformal prediction, RL = reinforcement learning, API = API access
+        </p>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          Risk management with confidence has three complementary objectives that are often in tension:
+        </p>
+        <ul>
+          <li>
+            <strong>Calibration:</strong> Confidence should match true accuracy. Methods like Just Ask, ConfTuner, and ConfTS 
+            aim for this directly. But calibration alone doesn't prevent mistakes on OOD data.
+          </li>
+          <li>
+            <strong>Selective reliability:</strong> Flag uncertain predictions and abstract from them. SelfCheckGPT, Semantic Entropy, 
+            and R-Tuning excel here. But flagging too many cases reduces utility.
+          </li>
+          <li>
+            <strong>Conformal coverage:</strong> Formal guarantees (e.g., "this set contains the truth with probability ≥ 0.9") 
+            independent of data distribution. Conformal methods provide this. But they require well-calibrated nonconformity measures.
+          </li>
+        </ul>
+        <p>
+          Best practice combines these: (1) calibrate confidence via fine-tuning or prompt-based elicitation, (2) detect hallucinations 
+          via semantic entropy or probes, (3) apply conformal filtering for formal coverage guarantees, and (4) train models to 
+          abstain gracefully when uncertain. No single confidence source handles all three objectives equally.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

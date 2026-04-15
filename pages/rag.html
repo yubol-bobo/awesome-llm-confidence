@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence-Gated RAG | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html" class="active">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence-Gated RAG Systems</h1>
+    <p>Confidence at every stage of the retrieval-augmented generation pipeline (§6)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#when-to-retrieve">When to Retrieve</a></li>
+          <li><a href="#what-context">What Context to Keep</a></li>
+          <li><a href="#groundedness">Groundedness Detection</a></li>
+          <li><a href="#abstention">Abstention & Conformal</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Retrieval-augmented generation (RAG) is a four-stage pipeline: (1) decide whether to retrieve, (2) retrieve passages, 
+          (3) filter/rank retrieved context, and (4) generate with context, detecting hallucinations and deciding when to abstain.
+        </p>
+        <p>
+          Confidence controls all four stages. Low confidence in parametric knowledge triggers retrieval (FLARE, SELF-RAG). 
+          Low retrieval quality confidence gates context inclusion (CRAG, FILCO). Low grounding confidence in generated claims 
+          triggers refinement or abstention (HALT-RAG, Conformal-RAG). This section surveys confidence-gated approaches across 
+          the RAG pipeline.
+        </p>
+      </section>
+
+      <section id="when-to-retrieve">
+        <h2>When to Retrieve</h2>
+        <p>
+          Instead of always retrieving, confidence in parametric knowledge can gate retrieval, saving computation when the 
+          model is confident or the query is simple.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">FLARE: Low-Confidence Tokens Trigger Retrieval</a></div>
+          <div class="paper-meta">Jiang et al. · EMNLP 2023</div>
+          <div class="paper-desc">Monitors token confidence during generation; low-confidence tokens trigger online retrieval of relevant passages.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: sentence/token</span>
+            <span class="badge badge-role">Role: trigger</span>
+            <span class="badge badge-access">Access: Mid</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">DRAGIN: Info Need Uncertainty</a></div>
+          <div class="paper-meta">Su et al. · 2024</div>
+          <div class="paper-desc">Detects uncertain information needs; uses entropy to trigger retrieval at strategic points in generation.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: context/step</span>
+            <span class="badge badge-role">Role: trigger, query</span>
+            <span class="badge badge-access">Access: Mid</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Adaptive-RAG: Question Complexity Routing</a></div>
+          <div class="paper-meta">Jeong et al. · 2024</div>
+          <div class="paper-desc">Routes queries by inferred complexity; simple questions skip retrieval, complex ones trigger multi-hop retrieval.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: route strategy</span>
+            <span class="badge badge-access">Access: Pre, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SKR: Self-Knowledge Elicitation</a></div>
+          <div class="paper-meta">Wang et al. · 2023</div>
+          <div class="paper-desc">Elicits the model's confidence in its own knowledge; retrieves only when confidence is low.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: retrieve-or-skip</span>
+            <span class="badge badge-access">Access: Pre</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SELF-RAG: Reflection Tokens</a></div>
+          <div class="paper-meta">Asai et al. · ICLR 2024 (Oral)</div>
+          <div class="paper-desc">Generates special reflection tokens that score query relevance, passage utility, and answer quality, controlling retrieval and generation.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query/passage/answer</span>
+            <span class="badge badge-role">Role: trigger, critique</span>
+            <span class="badge badge-access">Access: Pre, Ctx, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SEAKR: Internal Uncertainty Routing</a></div>
+          <div class="paper-meta">Yao et al. · ACL 2025</div>
+          <div class="paper-desc">Routes queries based on internal model state uncertainty; triggers retrieval, reranking, and routing decisions.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: query/snippet</span>
+            <span class="badge badge-role">Role: trigger, rerank, route</span>
+            <span class="badge badge-access">Access: Pre, Ctx, WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SUGAR: Semantic Uncertainty for Depth</a></div>
+          <div class="paper-meta">Zubkova et al. · ICASSP 2025</div>
+          <div class="paper-desc">Uses semantic uncertainty to predict query difficulty; triggers deeper retrieval and iterative refinement.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: trigger, depth</span>
+            <span class="badge badge-access">Access: Pre, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">PAIRS: Parametric Path Convergence</a></div>
+          <div class="paper-meta">Chen et al. · 2025</div>
+          <div class="paper-desc">Monitors parametric vs. retrieval agreement; low agreement triggers filtering and re-retrieval.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query/doc</span>
+            <span class="badge badge-role">Role: trigger, filter</span>
+            <span class="badge badge-access">Access: Pre, Ctx</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="what-context">
+        <h2>What Context to Keep</h2>
+        <p>
+          After retrieval, confidence in passage relevance and utility determines which passages to include in the context window.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CRAG: Retrieval Quality Score</a></div>
+          <div class="paper-meta">Yan et al. · 2024</div>
+          <div class="paper-desc">Scores retrieved passages by quality; uses confidence to correct or fall back to parametric answers.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: retrieval set</span>
+            <span class="badge badge-role">Role: correct, fallback</span>
+            <span class="badge badge-access">Access: Ctx, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">FILCO: Context Usefulness Score</a></div>
+          <div class="paper-meta">Wang et al. · 2023</div>
+          <div class="paper-desc">Filters and ranks passages by usefulness to the task using auxiliary scoring models.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: passage/sentence</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: Ctx, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">InfoGain-RAG: Document Info Gain</a></div>
+          <div class="paper-meta">Wang et al. · EMNLP 2025</div>
+          <div class="paper-desc">Selects documents that maximize information gain about the query, filtering low-value passages.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: document</span>
+            <span class="badge badge-role">Role: rerank, filter</span>
+            <span class="badge badge-access">Access: Ctx</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SKILL-RAG: Self-Knowledge Sentence Score</a></div>
+          <div class="paper-meta">Isoda · 2025</div>
+          <div class="paper-desc">Scores sentences by the model's self-knowledge and context utility, filtering irrelevant passages.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: sentence</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: Ctx, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Sparse-RAG: Sparse Document Selection</a></div>
+          <div class="paper-meta">Zhu et al. · 2024</div>
+          <div class="paper-desc">Uses confidence-based sparsification to select only the most relevant documents, reducing context size.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: document</span>
+            <span class="badge badge-role">Role: select, sparsify</span>
+            <span class="badge badge-access">Access: Ctx, Mid</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">UncertaintyRAG: Span Uncertainty/SNR</a></div>
+          <div class="paper-meta">Li et al. · 2024</div>
+          <div class="paper-desc">Scores passages by span-level uncertainty and signal-to-noise ratio; retrieves and ranks by confidence.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: span/chunk</span>
+            <span class="badge badge-role">Role: score, retrieve</span>
+            <span class="badge badge-access">Access: Ctx, FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="groundedness">
+        <h2>Groundedness Detection</h2>
+        <p>
+          Even with context, models can hallucinate. These methods detect when generated claims are not grounded in retrieved passages.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ReDeEP: ECS + PKS Mechanistic Detection</a></div>
+          <div class="paper-meta">Sun et al. · 2024</div>
+          <div class="paper-desc">Uses mechanistic probes (entailment check score + parametric knowledge signal) to detect ungrounded claims.</div>
+          <div class="paper-tags">
+            <span class="badge badge-mech">Mechanistic</span>
+            <span class="badge badge-unit">Unit: answer/mechanism</span>
+            <span class="badge badge-role">Role: detect, mitigate</span>
+            <span class="badge badge-access">Access: Post, WB</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">HALT-RAG: Calibrated NLI Ensemble</a></div>
+          <div class="paper-meta">Goswami & Kurra · 2025</div>
+          <div class="paper-desc">Uses an ensemble of NLI models with calibrated confidence to verify claim grounding; abstains if unsure.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: claim/answer</span>
+            <span class="badge badge-role">Role: detect, abstain</span>
+            <span class="badge badge-access">Access: Post, Aux</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">FRANQ: Faithfulness-Conditioned Factuality UQ</a></div>
+          <div class="paper-meta">Fadeeva et al. · 2025</div>
+          <div class="paper-desc">Conditions uncertainty quantification on faithfulness signals; detects claims likely to be hallucinated.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: claim</span>
+            <span class="badge badge-role">Role: detect</span>
+            <span class="badge badge-access">Access: Post, Aux</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="abstention">
+        <h2>Abstention & Conformal Prediction</h2>
+        <p>
+          Rather than always generating, these methods use confidence to decide when to abstain, with formal coverage guarantees.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">TRAQ: Conformal Passage + Answer Sets</a></div>
+          <div class="paper-meta">Li et al. · NAACL 2024</div>
+          <div class="paper-desc">Predicts conformal sets of passages and answers with guaranteed coverage, based on calibrated confidence.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: passage/answer set</span>
+            <span class="badge badge-role">Role: set-predict</span>
+            <span class="badge badge-access">Access: Ctx, Post, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConFLARE: Conformal Similarity Threshold</a></div>
+          <div class="paper-meta">Rouzrokh et al. · 2024</div>
+          <div class="paper-desc">Calibrates retrieval thresholds using conformal prediction to ensure retrieval quality coverage.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: chunk/retrieval set</span>
+            <span class="badge badge-role">Role: calibrate</span>
+            <span class="badge badge-access">Access: Ctx, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Principled Context Engineering: Conformal Snippet Relevance</a></div>
+          <div class="paper-meta">Chakraborty et al. · 2025</div>
+          <div class="paper-desc">Uses conformal prediction to filter snippets with guaranteed relevance coverage.</div>
+          <div class="paper-tags">
+            <span class="badge badge-ext">External</span>
+            <span class="badge badge-unit">Unit: snippet</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: Ctx, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Conformal-RAG: Conditional Conformal Factuality</a></div>
+          <div class="paper-meta">Feng et al. · SIGIR 2025</div>
+          <div class="paper-desc">Applies conditional conformal prediction to guarantee factuality coverage for sub-claims.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: sub-claim</span>
+            <span class="badge badge-role">Role: filter</span>
+            <span class="badge badge-access">Access: Post, CP</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Divide-Then-Align: Knowledge-Boundary Quadrant</a></div>
+          <div class="paper-meta">Sun et al. · ACL 2025</div>
+          <div class="paper-desc">Classifies queries by knowledge boundary; abstains for ambiguous or uncertain cases, aligning with retrieval.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: abstain, align</span>
+            <span class="badge badge-access">Access: Post, FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="6">When to Retrieve</td>
+              </tr>
+              <tr>
+                <td>FLARE</td>
+                <td>Self</td>
+                <td>Token confidence</td>
+                <td>Sentence/token</td>
+                <td>Trigger</td>
+                <td>Mid</td>
+              </tr>
+              <tr>
+                <td>DRAGIN</td>
+                <td>Self</td>
+                <td>Info need entropy</td>
+                <td>Context/step</td>
+                <td>Trigger, query</td>
+                <td>Mid</td>
+              </tr>
+              <tr>
+                <td>Adaptive-RAG</td>
+                <td>External</td>
+                <td>Complexity routing</td>
+                <td>Query</td>
+                <td>Route strategy</td>
+                <td>Pre, FT</td>
+              </tr>
+              <tr>
+                <td>SKR</td>
+                <td>Self</td>
+                <td>Self-knowledge</td>
+                <td>Query</td>
+                <td>Retrieve-or-skip</td>
+                <td>Pre</td>
+              </tr>
+              <tr>
+                <td>SELF-RAG</td>
+                <td>Self</td>
+                <td>Reflection tokens</td>
+                <td>Query/passage/answer</td>
+                <td>Trigger, critique</td>
+                <td>Pre, Ctx, FT</td>
+              </tr>
+              <tr>
+                <td>SEAKR</td>
+                <td>Mechanistic</td>
+                <td>Internal uncertainty</td>
+                <td>Query/snippet</td>
+                <td>Trigger, rerank, route</td>
+                <td>Pre, Ctx, WB</td>
+              </tr>
+              <tr>
+                <td>SUGAR</td>
+                <td>Self</td>
+                <td>Semantic uncertainty</td>
+                <td>Query</td>
+                <td>Trigger, depth</td>
+                <td>Pre, MS</td>
+              </tr>
+              <tr>
+                <td>PAIRS</td>
+                <td>Self</td>
+                <td>Parametric agreement</td>
+                <td>Query/doc</td>
+                <td>Trigger, filter</td>
+                <td>Pre, Ctx</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">What Context to Keep</td>
+              </tr>
+              <tr>
+                <td>CRAG</td>
+                <td>External</td>
+                <td>Retrieval quality</td>
+                <td>Retrieval set</td>
+                <td>Correct, fallback</td>
+                <td>Ctx, Aux</td>
+              </tr>
+              <tr>
+                <td>FILCO</td>
+                <td>External</td>
+                <td>Usefulness score</td>
+                <td>Passage/sentence</td>
+                <td>Filter</td>
+                <td>Ctx, FT</td>
+              </tr>
+              <tr>
+                <td>InfoGain-RAG</td>
+                <td>Self</td>
+                <td>Info gain</td>
+                <td>Document</td>
+                <td>Rerank, filter</td>
+                <td>Ctx</td>
+              </tr>
+              <tr>
+                <td>SKILL-RAG</td>
+                <td>Self</td>
+                <td>Self-knowledge score</td>
+                <td>Sentence</td>
+                <td>Filter</td>
+                <td>Ctx, FT</td>
+              </tr>
+              <tr>
+                <td>Sparse-RAG</td>
+                <td>Self</td>
+                <td>Relevance confidence</td>
+                <td>Document</td>
+                <td>Select, sparsify</td>
+                <td>Ctx, Mid</td>
+              </tr>
+              <tr>
+                <td>UncertaintyRAG</td>
+                <td>Self</td>
+                <td>Span uncertainty</td>
+                <td>Span/chunk</td>
+                <td>Score, retrieve</td>
+                <td>Ctx, FT</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Groundedness Detection & Abstention</td>
+              </tr>
+              <tr>
+                <td>ReDeEP</td>
+                <td>Mechanistic</td>
+                <td>ECS + PKS</td>
+                <td>Answer/mechanism</td>
+                <td>Detect, mitigate</td>
+                <td>Post, WB</td>
+              </tr>
+              <tr>
+                <td>HALT-RAG</td>
+                <td>External</td>
+                <td>NLI ensemble</td>
+                <td>Claim/answer</td>
+                <td>Detect, abstain</td>
+                <td>Post, Aux</td>
+              </tr>
+              <tr>
+                <td>FRANQ</td>
+                <td>External</td>
+                <td>Faithfulness UQ</td>
+                <td>Claim</td>
+                <td>Detect</td>
+                <td>Post, Aux</td>
+              </tr>
+              <tr>
+                <td>TRAQ</td>
+                <td>Hybrid</td>
+                <td>Conformal confidence</td>
+                <td>Passage/answer set</td>
+                <td>Set-predict</td>
+                <td>Ctx, Post, CP</td>
+              </tr>
+              <tr>
+                <td>ConFLARE</td>
+                <td>External</td>
+                <td>Similarity threshold</td>
+                <td>Chunk/set</td>
+                <td>Calibrate</td>
+                <td>Ctx, CP</td>
+              </tr>
+              <tr>
+                <td>Principled Ctx Eng</td>
+                <td>External</td>
+                <td>Snippet relevance</td>
+                <td>Snippet</td>
+                <td>Filter</td>
+                <td>Ctx, CP</td>
+              </tr>
+              <tr>
+                <td>Conformal-RAG</td>
+                <td>Hybrid</td>
+                <td>Conformal factuality</td>
+                <td>Sub-claim</td>
+                <td>Filter</td>
+                <td>Post, CP</td>
+              </tr>
+              <tr>
+                <td>Divide-Then-Align</td>
+                <td>Hybrid</td>
+                <td>Knowledge boundary</td>
+                <td>Query</td>
+                <td>Abstain, align</td>
+                <td>Post, FT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          RAG confidence systems are highly source-sensitive. Self-confidence works well for detecting parametric knowledge gaps 
+          (FLARE, SKR) but is less reliable for judging retrieval quality. Auxiliary signals (CRAG, HALT-RAG) excel at post-hoc 
+          verification but add latency. Mechanistic probes (ReDeEP, SEAKR) offer interpretability but require white-box access.
+        </p>
+        <p>
+          The best systems combine signals:
+        </p>
+        <ul>
+          <li>
+            <strong>Trigger retrieval</strong> using self-confidence (token uncertainty) or external routers (Adaptive-RAG).
+          </li>
+          <li>
+            <strong>Filter retrieved passages</strong> using external auxiliary signals (CRAG, FILCO) or mechanistic measures (SEAKR).
+          </li>
+          <li>
+            <strong>Verify grounding</strong> using external verifiers (HALT-RAG) or conformal methods (Conformal-RAG) with formal coverage guarantees.
+          </li>
+          <li>
+            <strong>Abstain strategically</strong> when retrieval fails or claims are ungrounded, preserving user trust.
+          </li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence in Agentic Systems | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html" class="active">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence in Agentic Systems</h1>
+    <p>From single decisions to composed action loops with layered control (§8)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#selective-escalation">Selective Escalation</a></li>
+          <li><a href="#self-correction">Self-Correction</a></li>
+          <li><a href="#verifier-guided">Verifier-Guided Search</a></li>
+          <li><a href="#multi-agent">Multi-Agent Deliberation</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Agentic systems compose multiple steps, decisions, and agents over trajectories that can extend for minutes or hours. 
+          Confidence at individual steps becomes a critical control signal for deciding whether to continue, replan, escalate, 
+          search deeper, or defer to humans.
+        </p>
+        <p>
+          Four patterns emerge: (1) <strong>selective escalation</strong> — trigger expensive operations (debates, deeper search, human input) 
+          when confidence is low, (2) <strong>self-correction</strong> — detect and fix errors within a trajectory, (3) <strong>verifier-guided search</strong> 
+          — use reward or process models to guide exploration (MCTS, RL), and (4) <strong>multi-agent deliberation</strong> — aggregate 
+          confidence across agents to reach collective decisions.
+        </p>
+      </section>
+
+      <section id="selective-escalation">
+        <h2>Selective Escalation</h2>
+        <p>
+          Use confidence to decide when to invoke expensive or escalated mechanisms: multi-agent debate, longer searches, 
+          additional compute, or human intervention.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">iMAD: Hesitation Features Trigger Debate</a></div>
+          <div class="paper-meta">Fan et al. · 2025</div>
+          <div class="paper-desc">Detects hesitation in model outputs; triggers multi-agent debate when confidence is low.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: query</span>
+            <span class="badge badge-role">Role: trigger debate</span>
+            <span class="badge badge-access">Access: Pr, FT, MA</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">PRM Calibration: Calibrated PRM Success</a></div>
+          <div class="paper-meta">Park et al. · NeurIPS 2025</div>
+          <div class="paper-desc">Calibrates process reward model confidence to allocate compute budget; low confidence → deeper search.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: prefix/traj</span>
+            <span class="badge badge-role">Role: allocate budget</span>
+            <span class="badge badge-access">Access: Aux, MS, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">Scaling TTC: Difficulty/Verifier Value</a></div>
+          <div class="paper-meta">Snell et al. · ICLR 2025 (Oral)</div>
+          <div class="paper-desc">Predicts query difficulty and verifier value; allocates compute based on expected improvement from extra steps.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: query/traj</span>
+            <span class="badge badge-role">Role: allocate compute</span>
+            <span class="badge badge-access">Access: Aux, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">VeriMAP: Planner Verification Functions</a></div>
+          <div class="paper-meta">Xu et al. · EACL 2026</div>
+          <div class="paper-desc">Uses verifier signals to detect failed subtasks; triggers retry or replan with higher-level reasoning.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: subtask/plan</span>
+            <span class="badge badge-role">Role: retry, replan</span>
+            <span class="badge badge-access">Access: Env, Aux</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="self-correction">
+        <h2>Self-Correction</h2>
+        <p>
+          Rather than accepting the first output, these systems use confidence signals to detect errors and refine trajectories.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ReVISE: Intrinsic Self-Verification</a></div>
+          <div class="paper-meta">Lee et al. · ICML 2025</div>
+          <div class="paper-desc">Trains models to verify and revise their own steps; uses confidence in verification to decide whether to revise.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: step/traj</span>
+            <span class="badge badge-role">Role: revise, stop</span>
+            <span class="badge badge-access">Access: FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SSR: Socratic Step Confidence</a></div>
+          <div class="paper-meta">Shi et al. · 2025</div>
+          <div class="paper-desc">Uses confidence in intermediate steps to locate errors; applies Socratic refinement to fix them.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: step</span>
+            <span class="badge badge-role">Role: locate, refine</span>
+            <span class="badge badge-access">Access: MS, Pr</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">BacktrackAgent: Verifier + Judger Backtracking</a></div>
+          <div class="paper-meta">Wu et al. · EMNLP 2025</div>
+          <div class="paper-desc">Uses verifier signals to detect action failures; backtracks and retries with alternative strategies.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: page/action</span>
+            <span class="badge badge-role">Role: detect, backtrack</span>
+            <span class="badge badge-access">Access: Env, Aux</span>
+          </div>
+        </div>
+
+        <p style="margin-top: 1.5rem; font-style: italic; font-size: 0.95rem;">
+          <strong>Related baselines (behavioral):</strong> Self-Refine (NeurIPS 2023), Reflexion (NeurIPS 2023), 
+          ASTRO (2025), Self-Backtracking (2025). These work but use less structured confidence signals.
+        </p>
+      </section>
+
+      <section id="verifier-guided">
+        <h2>Verifier-Guided Search</h2>
+        <p>
+          Use verifier or process rewards as confidence signals to guide tree search (MCTS) or beam search, directing 
+          computational budget toward promising branches.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">LATS: MCTS + Value/Reflection</a></div>
+          <div class="paper-meta">Zhou et al. · ICML 2024</div>
+          <div class="paper-desc">Combines MCTS with value function and self-reflection; uses confidence to expand, select, and backpropagate.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: node/traj</span>
+            <span class="badge badge-role">Role: expand, select</span>
+            <span class="badge badge-access">Access: Env, MS</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ReST-MCTS: Process Reward Search</a></div>
+          <div class="paper-meta">Zhang et al. · 2024</div>
+          <div class="paper-desc">Uses process reward model confidence to guide MCTS expansion and filtering.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: step/traj</span>
+            <span class="badge badge-role">Role: expand, filter</span>
+            <span class="badge badge-access">Access: MS, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">UATS: PRM Uncertainty via MC Dropout</a></div>
+          <div class="paper-meta">Song et al. · 2026</div>
+          <div class="paper-desc">Estimates PRM uncertainty via Monte Carlo dropout; uses uncertainty to guide search and allocate compute.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: step/node</span>
+            <span class="badge badge-role">Role: guide search</span>
+            <span class="badge badge-access">Access: Aux, MS, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">AgentRM: Trajectory Reward Modeling</a></div>
+          <div class="paper-meta">Xia et al. · ACL 2025</div>
+          <div class="paper-desc">Trains trajectory-level reward models; uses confidence to guide search and select best trajectories.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: step/traj</span>
+            <span class="badge badge-role">Role: guide search</span>
+            <span class="badge badge-access">Access: Aux, FT</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">RewardAgent: RM + Verifier Reward</a></div>
+          <div class="paper-meta">Peng et al. · 2025</div>
+          <div class="paper-desc">Combines reward model and verifier confidence; uses ensemble to select and supervise trajectories.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: response/traj</span>
+            <span class="badge badge-role">Role: select, supervise</span>
+            <span class="badge badge-access">Access: Aux, FT</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="multi-agent">
+        <h2>Multi-Agent Deliberation</h2>
+        <p>
+          When multiple agents or samples are available, aggregate their confidence signals to reach collective decisions.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ReConcile: Calibrated Confidence-Weighted Voting</a></div>
+          <div class="paper-meta">Chen et al. · ACL 2024</div>
+          <div class="paper-desc">Weights agent votes by calibrated confidence; iteratively refines consensus through weighted aggregation.</div>
+          <div class="paper-tags">
+            <span class="badge badge-peer">Peer</span>
+            <span class="badge badge-unit">Unit: answer/round</span>
+            <span class="badge badge-role">Role: aggregate, update</span>
+            <span class="badge badge-access">Access: MA</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConfMAD: LN/Verbal Confidence</a></div>
+          <div class="paper-meta">Lin & Hooi · EMNLP Findings 2025</div>
+          <div class="paper-desc">Uses layer norm signals and verbal confidence to weight agent responses; aggregates and revises collectively.</div>
+          <div class="paper-tags">
+            <span class="badge badge-peer">Peer</span>
+            <span class="badge badge-unit">Unit: response/turn</span>
+            <span class="badge badge-role">Role: aggregate, revise</span>
+            <span class="badge badge-access">Access: MA</span>
+          </div>
+        </div>
+
+        <p style="margin-top: 1.5rem; font-style: italic; font-size: 0.95rem;">
+          <strong>Related diagnostic works:</strong> Can LLMs Debate? (2025), Voting or Consensus (ACL Findings 2025), 
+          Free-MAD (2025). These analyze multi-agent behaviors but focus on mechanics rather than confidence-based control.
+        </p>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="6">Selective Escalation</td>
+              </tr>
+              <tr>
+                <td>iMAD</td>
+                <td>Self</td>
+                <td>Hesitation features</td>
+                <td>Query</td>
+                <td>Trigger debate</td>
+                <td>Pr, FT, MA</td>
+              </tr>
+              <tr>
+                <td>PRM Calibration</td>
+                <td>Auxiliary</td>
+                <td>Calibrated PRM</td>
+                <td>Prefix/traj</td>
+                <td>Allocate budget</td>
+                <td>Aux, MS, FT</td>
+              </tr>
+              <tr>
+                <td>Scaling TTC</td>
+                <td>Hybrid</td>
+                <td>Difficulty + verifier</td>
+                <td>Query/traj</td>
+                <td>Allocate compute</td>
+                <td>Aux, MS</td>
+              </tr>
+              <tr>
+                <td>VeriMAP</td>
+                <td>Auxiliary</td>
+                <td>Planner verification</td>
+                <td>Subtask/plan</td>
+                <td>Retry, replan</td>
+                <td>Env, Aux</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Self-Correction</td>
+              </tr>
+              <tr>
+                <td>ReVISE</td>
+                <td>Self</td>
+                <td>Self-verification</td>
+                <td>Step/traj</td>
+                <td>Revise, stop</td>
+                <td>FT</td>
+              </tr>
+              <tr>
+                <td>SSR</td>
+                <td>Self</td>
+                <td>Step confidence</td>
+                <td>Step</td>
+                <td>Locate, refine</td>
+                <td>MS, Pr</td>
+              </tr>
+              <tr>
+                <td>BacktrackAgent</td>
+                <td>Auxiliary</td>
+                <td>Verifier signals</td>
+                <td>Page/action</td>
+                <td>Detect, backtrack</td>
+                <td>Env, Aux</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Verifier-Guided Search</td>
+              </tr>
+              <tr>
+                <td>LATS</td>
+                <td>Hybrid</td>
+                <td>Value + reflection</td>
+                <td>Node/traj</td>
+                <td>Expand, select</td>
+                <td>Env, MS</td>
+              </tr>
+              <tr>
+                <td>ReST-MCTS</td>
+                <td>Auxiliary</td>
+                <td>Process reward</td>
+                <td>Step/traj</td>
+                <td>Expand, filter</td>
+                <td>MS, FT</td>
+              </tr>
+              <tr>
+                <td>UATS</td>
+                <td>Auxiliary</td>
+                <td>PRM uncertainty</td>
+                <td>Step/node</td>
+                <td>Guide search</td>
+                <td>Aux, MS, FT</td>
+              </tr>
+              <tr>
+                <td>AgentRM</td>
+                <td>Auxiliary</td>
+                <td>Trajectory reward</td>
+                <td>Step/traj</td>
+                <td>Guide search</td>
+                <td>Aux, FT</td>
+              </tr>
+              <tr>
+                <td>RewardAgent</td>
+                <td>Hybrid</td>
+                <td>RM + verifier</td>
+                <td>Response/traj</td>
+                <td>Select, supervise</td>
+                <td>Aux, FT</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="6">Multi-Agent Deliberation</td>
+              </tr>
+              <tr>
+                <td>ReConcile</td>
+                <td>Peer</td>
+                <td>Calibrated confidence</td>
+                <td>Answer/round</td>
+                <td>Aggregate, update</td>
+                <td>MA</td>
+              </tr>
+              <tr>
+                <td>ConfMAD</td>
+                <td>Peer</td>
+                <td>LN + verbal conf</td>
+                <td>Response/turn</td>
+                <td>Aggregate, revise</td>
+                <td>MA</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+          <strong>Access legend:</strong> Pr = prompt, FT = fine-tuned, Aux = auxiliary model, 
+          Env = environment, MA = multi-agent, MS = multiple samples
+        </p>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          Agentic systems fundamentally extend the scope of confidence control. Single-decision inference operates in 
+          milliseconds; agentic loops operate over minutes or hours with dozens of intermediate steps. Confidence signals 
+          must be reliable across this extended horizon.
+        </p>
+        <p>
+          Four open questions dominate:
+        </p>
+        <ul>
+          <li>
+            <strong>Composition:</strong> How do confidence signals compose across steps? Low confidence in step 1 does not 
+            directly tell us whether the entire trajectory will succeed. Methods like LATS and ReST-MCTS use process or 
+            trajectory rewards, but these require auxiliary training.
+          </li>
+          <li>
+            <strong>Signal alignment:</strong> Self-verification (ReVISE), process rewards (LATS), and verifier judging 
+            (VeriMAP) all claim to detect errors. When they disagree, which should we trust? Best practice layers multiple 
+            signals (ReConcile, ConfMAD) but this increases complexity.
+          </li>
+          <li>
+            <strong>Compute budgeting:</strong> Scaling TTC and PRM Calibration allocate compute based on confidence, but 
+            the optimal allocation is unclear. Should hard queries get more samples or deeper search?
+          </li>
+          <li>
+            <strong>Human escalation:</strong> Most papers assume escalation is to a larger model or human. When confidence 
+            is low, the right action may be to ask a human for clarification or approval. This is underexplored.
+          </li>
+        </ul>
+        <p>
+          <strong>Key insight:</strong> Composition is the bottleneck. The survey has strong individual building blocks 
+          (confidence signals, verifiers, routing, RAG, risk control). Integrating them into reliable, composable agentic 
+          systems remains an open research frontier.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>

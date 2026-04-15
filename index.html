@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Awesome LLM Confidence Utilizations</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<meta name="description" content="A comprehensive survey of confidence utilization in Large Language Models — covering training, inference, routing, RAG, risk management, and agentic systems.">
+</head>
+<body>
+
+<header class="header">
+<div class="header-inner">
+  <a href="index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+  <input type="checkbox" id="nav-toggle" class="nav-toggle">
+  <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="pages/framework.html">Framework</a></li>
+    <li><a href="pages/training.html">Training</a></li>
+    <li><a href="pages/inference.html">Inference</a></li>
+    <li><a href="pages/routing.html">Routing</a></li>
+    <li><a href="pages/rag.html">RAG</a></li>
+    <li><a href="pages/risk.html">Risk</a></li>
+    <li><a href="pages/agentic.html">Agentic</a></li>
+    <li><a href="pages/challenges.html">Challenges</a></li>
+  </ul>
+</div>
+</header>
+
+<section class="hero">
+  <h1>Confidence as Control</h1>
+  <p class="subtitle">A Survey of Confidence Utilization in Large Language Models</p>
+  <p class="authors">
+    <strong>Yubo Li</strong>, <strong>Tianyang Zhou</strong>, <strong>Xiaobin Shen</strong>, <strong>Yidi Miao</strong>, <strong>Rema Padman</strong>, <strong>Ramayya Krishnan</strong><br>
+    Carnegie Mellon University
+  </p>
+  <div class="btn-group">
+    <a href="#" class="btn btn-primary">📄 Paper (TMLR)</a>
+    <a href="https://github.com/yubol-bobo/awesome-llm-confidence" class="btn btn-outline">⭐ GitHub</a>
+  </div>
+</section>
+
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <h2>What is this survey about?</h2>
+    <p>Positioning confidence not just as an estimation target, but as a control primitive for building reliable LLM systems.</p>
+  </div>
+  <p>Most work on confidence in large language models has focused on estimation, uncertainty quantification, and calibration. In deployed systems, however, the key question is <strong>how confidence should be used to govern behavior</strong>. This survey studies <em>confidence utilization</em>: the use of confidence-related signals to control system decisions. We formalize this through a unified framework in which confidence is defined over decision units under a local state and then consumed by a policy to determine actions.</p>
+  <p>Using this lens, we organize the literature across the <strong>full LLM lifecycle</strong>: training, inference, model selection and cascading, retrieval-augmented generation, risk management, and agentic control. We compare methods by signal source, decision unit, and functional role, and highlight open challenges in confidence semantics, composition, source attribution, decision-aware evaluation, and robustness.</p>
+
+  <figure class="figure mt-4">
+    <img src="assets/img/diagram.png" alt="Confidence-guided control across six parallel domains of the LLM lifecycle" loading="lazy">
+    <figcaption>Figure 1: Confidence-guided control across six parallel domains of the LLM lifecycle.</figcaption>
+  </figure>
+
+  <figure class="figure mt-4">
+    <img src="assets/img/overview.png" alt="Overview of confidence-as-control across training, inference, and deployment" loading="lazy">
+    <figcaption>Figure 2: Overview of confidence-as-control across training, inference, and deployment stages.</figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="section section-alt">
+<div class="container">
+  <div class="section-header">
+    <h2>Taxonomy at a Glance</h2>
+    <p>Six domains of the LLM lifecycle where confidence functions as control.</p>
+  </div>
+  <div class="taxonomy-grid">
+    <a href="pages/training.html" class="taxonomy-card">
+      <div class="section-num">§3 · Training</div>
+      <h3>Confidence-Aware Training</h3>
+      <p>Data curation, fine-tuning, distillation, preference optimization, and RL — confidence determines where learning should occur, be damped, or teach the model to abstain.</p>
+    </a>
+    <a href="pages/inference.html" class="taxonomy-card">
+      <div class="section-num">§4 · Inference</div>
+      <h3>Confidence-Driven Inference</h3>
+      <p>Output selection, adaptive stopping and refinement, and contrastive decoding — confidence becomes an online control variable at candidate, state, and token levels.</p>
+    </a>
+    <a href="pages/routing.html" class="taxonomy-card">
+      <div class="section-num">§5 · Model Selection</div>
+      <h3>Confidence-Guided Model Selection</h3>
+      <p>Sequential cascading, pre-call routing, and hybrid systems — confidence governs which model to call, when to defer, and how to allocate capacity across portfolios.</p>
+    </a>
+    <a href="pages/rag.html" class="taxonomy-card">
+      <div class="section-num">§6 · RAG</div>
+      <h3>Confidence-Gated RAG</h3>
+      <p>Retrieval gating, context filtering, groundedness detection, and conformal guarantees — confidence becomes source-sensitive across parametric and non-parametric knowledge.</p>
+    </a>
+    <a href="pages/risk.html" class="taxonomy-card">
+      <div class="section-num">§7 · Risk Management</div>
+      <h3>Confidence-Based Risk Management</h3>
+      <p>Hallucination detection, conformal prediction with coverage guarantees, and abstention-oriented reliability alignment — confidence serves calibration, selectivity, and coverage.</p>
+    </a>
+    <a href="pages/agentic.html" class="taxonomy-card">
+      <div class="section-num">§8 · Agentic Systems</div>
+      <h3>Confidence in Agentic Systems</h3>
+      <p>Selective escalation, self-correction and backtracking, verifier-guided search, and multi-agent deliberation — confidence propagates across tools, steps, and agents.</p>
+    </a>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <h2>Key Contributions</h2>
+  </div>
+  <div class="contrib-grid">
+    <div class="contrib-item">
+      <span class="num">🔬</span>
+      <h4>Unified Framework</h4>
+      <p>Confidence as a control signal defined over decision units, consumed by a policy — a single abstraction covering the full lifecycle.</p>
+    </div>
+    <div class="contrib-item">
+      <span class="num">📊</span>
+      <h4>6-Domain Taxonomy</h4>
+      <p>Comprehensive coverage across training, inference, routing, RAG, risk management, and agentic systems.</p>
+    </div>
+    <div class="contrib-item">
+      <span class="num">100+</span>
+      <h4>Methods Compared</h4>
+      <p>Cross-cutting comparison tables organized by signal source, decision unit, and functional role.</p>
+    </div>
+    <div class="contrib-item">
+      <span class="num">5</span>
+      <h4>Open Challenges</h4>
+      <p>Confidence semantics, composition, source attribution, decision-aware evaluation, and robustness.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section section-alt">
+<div class="container">
+  <div class="section-header">
+    <h2>Citation</h2>
+  </div>
+  <div style="position:relative">
+    <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('bibtex').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)})">Copy</button>
+    <pre class="bibtex-block" id="bibtex">@article{li2025confidence,
+  title={Confidence as Control: A Survey of Confidence
+         Utilization in Large Language Models},
+  author={Li, Yubo and Zhou, Tianyang and Shen, Xiaobin
+          and Miao, Yidi and Padman, Rema
+          and Krishnan, Ramayya},
+  journal={Transactions on Machine Learning Research},
+  year={2025}
+}</pre>
+  </div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="footer-inner">
+  <div>
+    <h4>About</h4>
+    <p style="font-size:0.85rem;">This website accompanies the survey paper "Confidence as Control" which studies how confidence-related signals are used to govern LLM behavior across the full lifecycle.</p>
+  </div>
+  <div>
+    <h4>Lifecycle Stages</h4>
+    <ul>
+      <li><a href="pages/training.html">Training</a></li>
+      <li><a href="pages/inference.html">Inference</a></li>
+      <li><a href="pages/routing.html">Model Selection</a></li>
+      <li><a href="pages/rag.html">RAG</a></li>
+      <li><a href="pages/risk.html">Risk Management</a></li>
+      <li><a href="pages/agentic.html">Agentic Systems</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Resources</h4>
+    <ul>
+      <li><a href="pages/framework.html">Unified Framework</a></li>
+      <li><a href="pages/challenges.html">Open Challenges</a></li>
+      <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub Repo</a></li>
+    </ul>
+  </div>
+</div>
+<div class="footer-bottom">
+  <p>&copy; 2025 Yubo Li et al., Carnegie Mellon University. All rights reserved.</p>
+</div>
+</footer>
+
+</body>
+</html>

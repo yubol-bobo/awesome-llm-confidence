@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confidence-Aware Training | Awesome LLM Confidence</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo">Awesome <span>LLM Confidence</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="framework.html">Framework</a></li>
+        <li><a href="training.html" class="active">Training</a></li>
+        <li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li>
+        <li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li>
+        <li><a href="agentic.html">Agentic</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Confidence-Aware Training</h1>
+    <p>How confidence governs data curation, fine-tuning, and alignment (§3)</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#data-selection">Data Selection</a></li>
+          <li><a href="#fine-tuning">Fine-Tuning & Distillation</a></li>
+          <li><a href="#preference-opt">Preference Optimization & RL</a></li>
+          <li><a href="#summary-table">Summary Table</a></li>
+          <li><a href="#discussion">Discussion</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          Training fundamentally depends on quality signals. Rather than treating all data equally, confidence-aware 
+          training uses reliability estimates to allocate gradient mass: curate which examples to train on, weight how much 
+          each example influences the loss, and guide preference optimization away from regions the model is uncertain about.
+        </p>
+        <p>
+          Three core mechanisms emerge: (1) <strong>data selection</strong> filters low-quality or high-uncertainty instances 
+          before training, (2) <strong>fine-tuning & distillation</strong> use confidence to weight token-level or example-level 
+          losses, and (3) <strong>preference optimization & RL</strong> use confidence to shape reward shaping and sample efficiency.
+        </p>
+      </section>
+
+      <section id="data-selection">
+        <h2>Data Selection</h2>
+        <p>
+          Low-confidence examples (uncertain predictions, large performance gaps) are often the most valuable to learn from. 
+          These papers use various confidence signals to score and filter training data.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2308.12032">Cherry: IFD from Answer Likelihood Gap</a></div>
+          <div class="paper-meta">Li et al. · NAACL 2024</div>
+          <div class="paper-desc">Identifies false documents via the gap between answer likelihood in relevant vs. irrelevant passages. Selects high-uncertainty QA pairs for training.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2402.00530">Superfiltering: Weak-to-Strong IFD Transfer</a></div>
+          <div class="paper-meta">Li et al. · 2024</div>
+          <div class="paper-desc">Transfers weak model confidence to filter data for strong model fine-tuning. Leverages likelihood gaps across model sizes.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">UniMax: Uncertainty + Graph Influence</a></div>
+          <div class="paper-meta">Han et al. · WWW 2025</div>
+          <div class="paper-desc">Combines model uncertainty with data influence scores on a graph to select high-value training examples.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2402.08114">Active-Pref: Predictive Entropy + Preference Certainty</a></div>
+          <div class="paper-meta">Muldrew et al. · 2024</div>
+          <div class="paper-desc">Selects preference pairs using model uncertainty and preference confidence to maximize learning value.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2402.16705">SelectIT: Uncertainty-Aware Self-Reflection</a></div>
+          <div class="paper-meta">Liu et al. · 2024</div>
+          <div class="paper-desc">Uses model confidence in self-reflection to select informative training examples about its own mistakes.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2403.12776">CLEAR: Confidence Evaluator Filters/Rectifies</a></div>
+          <div class="paper-meta">Chen & Mueller · 2024</div>
+          <div class="paper-desc">An auxiliary confidence evaluator scores and filters noisy labels, rectifying low-confidence annotations.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2402.09668">Ask-LLM: Judge Usefulness P(YES)</a></div>
+          <div class="paper-meta">Sachdeva et al. · 2024</div>
+          <div class="paper-desc">Queries an auxiliary judge model for confidence that an example is useful for training, selecting high-confidence instances.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="fine-tuning">
+        <h2>Fine-Tuning & Distillation</h2>
+        <p>
+          Rather than binary selection, these methods weight or gate the training loss by token-level or example-level 
+          confidence, allowing the model to learn from all data but with adaptive emphasis.
+        </p>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2412.02904">UA-CLM: Uncertainty-Aware CLM Objective</a></div>
+          <div class="paper-meta">Krishnan et al. · 2024</div>
+          <div class="paper-desc">Modifies the causal language modeling loss to down-weight tokens the model is already confident about.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">US-Tuning: Answer-vs-Abstain from Context Sufficiency</a></div>
+          <div class="paper-meta">Li et al. · ACL Findings 2025</div>
+          <div class="paper-desc">Fine-tunes models to predict whether context is sufficient, gating the training signal for answer quality.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: QA pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2505.17773">C-LoRA: Contextual Stochastic Adapters for PEFT</a></div>
+          <div class="paper-meta">Rahmati et al. · 2025</div>
+          <div class="paper-desc">Uses low-rank adapters gated by example-level confidence to enable adaptive fine-tuning for different data qualities.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SelecTKD: Teacher Propose-Verify for Selective Distillation</a></div>
+          <div class="paper-meta">Huang et al. · 2025</div>
+          <div class="paper-desc">Teacher model's confidence in intermediate tokens determines which tokens are distilled to student.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: token</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2402.11890">ATKD: Teacher Uncertainty Splits Tokens</a></div>
+          <div class="paper-meta">Zhong et al. · 2024</div>
+          <div class="paper-desc">Splits training into easy tokens (supervised directly) and hard tokens (teacher-guided), using teacher uncertainty.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: token</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://aclanthology.org/2024.findings-acl.958/">SRD: Student Difficulty/Compatibility for Data</a></div>
+          <div class="paper-meta">Li et al. · ACL Findings 2024</div>
+          <div class="paper-desc">Scores training data by student difficulty and teacher-student compatibility, prioritizing hard-but-compatible examples.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: example</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="preference-opt">
+        <h2>Preference Optimization & Reinforcement Learning</h2>
+        <p>
+          Modern alignment relies on pairwise preferences and reward shaping. These papers use confidence to weight 
+          which pairs are trained on and how strongly, or to shape intrinsic rewards based on model uncertainty.
+        </p>
+
+        <h3>DPO Variants and Extensions</h3>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">DPO: Baseline</a></div>
+          <div class="paper-meta">Rafailov et al. · NeurIPS 2023</div>
+          <div class="paper-desc">Direct Preference Optimization using log-probability ratios. Foundational baseline for confidence-aware variants.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">SimPO: Average Log Probability Baseline</a></div>
+          <div class="paper-meta">Meng et al. · NeurIPS 2024</div>
+          <div class="paper-desc">Simplifies DPO using average log probabilities, removing ratio. Standard baseline for modern methods.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">β-DPO: Adaptive Optimization Strength</a></div>
+          <div class="paper-meta">Wu et al. · NeurIPS 2024</div>
+          <div class="paper-desc">Dynamically adjusts the scaling parameter beta based on preference confidence, moderating optimization for uncertain pairs.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: batch/pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">ConfPO: Low-Confidence Token Selection</a></div>
+          <div class="paper-meta">Yoon et al. · ICML 2025</div>
+          <div class="paper-desc">Focuses preference optimization on tokens where the model is uncertain, maximizing learning value.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: token</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2511.07691">CAPO: Reward Margin Modulation</a></div>
+          <div class="paper-meta">Pokharel et al. · 2025</div>
+          <div class="paper-desc">Modulates reward margin in preference pairs based on confidence, suppressing optimization for ambiguous preferences.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: pair</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2510.11104">CGPO: Low-Confidence Split Points</a></div>
+          <div class="paper-meta">Lu et al. · 2025</div>
+          <div class="paper-desc">Uses token-level confidence to identify optimal divergence points in preference pairs, improving sample efficiency.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: step</span>
+          </div>
+        </div>
+
+        <h3>Reinforcement Learning with Confidence Rewards</h3>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2510.13501">CRew: Final-Answer Confidence as Reward</a></div>
+          <div class="paper-meta">Du et al. · 2025</div>
+          <div class="paper-desc">Uses the model's own confidence in final answers as an intrinsic reward signal for RL training.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: response</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2506.06395">RLSC: Self-Confidence Reward Shaping</a></div>
+          <div class="paper-meta">Li et al. · 2025</div>
+          <div class="paper-desc">Shapes RL rewards by penalizing low-confidence predictions, encouraging the model to express uncertainty appropriately.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: response</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2505.22660">RENT: Negative Entropy Intrinsic Reward</a></div>
+          <div class="paper-meta">Prabhudesai et al. · 2025</div>
+          <div class="paper-desc">Uses negative entropy over action distributions as an intrinsic reward, encouraging confident, decisive trajectories.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: trajectory</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">CoDaPO: Sequence Confidence + Difficulty</a></div>
+          <div class="paper-meta">Zhou et al. · ICML Workshop 2025</div>
+          <div class="paper-desc">Weights preference pairs by sequence-level confidence and difficulty, balancing learning across pairs.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: trajectory</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="#">C²GSPG: Calibration-Aware Sequence RL</a></div>
+          <div class="paper-meta">Liu et al. · 2025</div>
+          <div class="paper-desc">Ensures trajectory-level calibration during sequence RL, preventing overconfident optimization.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: trajectory</span>
+          </div>
+        </div>
+
+        <h3>RL with Reward Uncertainty</h3>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2401.00243">UP-RLHF: Reward Ensemble Uncertainty Penalty</a></div>
+          <div class="paper-meta">Zhai et al. · 2024</div>
+          <div class="paper-desc">Uses disagreement among reward models as uncertainty, penalizing optimization in uncertain regions.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: response</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2410.23726">UA-RLHF: Variance-Aware Conservative RLHF</a></div>
+          <div class="paper-meta">Banerjee & Gopalan · 2024</div>
+          <div class="paper-desc">Monitors reward variance and applies conservative constraints when uncertainty is high.</div>
+          <div class="paper-tags">
+            <span class="badge badge-auxiliary">Auxiliary</span>
+            <span class="badge badge-unit">Unit: response</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2410.09724">Taming-OC: Calibrate Overconfident Reward</a></div>
+          <div class="paper-meta">Leng et al. · 2024</div>
+          <div class="paper-desc">Detects and corrects overconfident reward models, preventing misaligned RL training.</div>
+          <div class="paper-tags">
+            <span class="badge badge-hybrid">Hybrid</span>
+            <span class="badge badge-unit">Unit: response</span>
+          </div>
+        </div>
+
+        <div class="paper-card">
+          <div class="paper-title"><a href="https://arxiv.org/abs/2512.19920">BCHRL: Risk-Sensitive Abstention Policy</a></div>
+          <div class="paper-meta">Wu et al. · 2025</div>
+          <div class="paper-desc">Trains models to abstain when confidence is low, preventing risky RL updates in uncertain regions.</div>
+          <div class="paper-tags">
+            <span class="badge badge-self">Self</span>
+            <span class="badge badge-unit">Unit: response/claim</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary-table">
+        <h2>Summary Table</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Source</th>
+                <th>Signal</th>
+                <th>Unit</th>
+                <th>Training Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-group-header">
+                <td colspan="5">Data Curation</td>
+              </tr>
+              <tr>
+                <td>Cherry</td>
+                <td>Self</td>
+                <td>Answer likelihood gap</td>
+                <td>Example</td>
+                <td>Filter</td>
+              </tr>
+              <tr>
+                <td>Superfiltering</td>
+                <td>Self</td>
+                <td>Weak model likelihood</td>
+                <td>Example</td>
+                <td>Transfer filter</td>
+              </tr>
+              <tr>
+                <td>UniMax</td>
+                <td>Hybrid</td>
+                <td>Uncertainty + influence</td>
+                <td>Example</td>
+                <td>Score, select</td>
+              </tr>
+              <tr>
+                <td>Active-Pref</td>
+                <td>Hybrid</td>
+                <td>Entropy + preference cert.</td>
+                <td>Pair</td>
+                <td>Select</td>
+              </tr>
+              <tr>
+                <td>SelectIT</td>
+                <td>Hybrid</td>
+                <td>Self-reflection confidence</td>
+                <td>Example</td>
+                <td>Select</td>
+              </tr>
+              <tr>
+                <td>CLEAR</td>
+                <td>Hybrid</td>
+                <td>Evaluator score</td>
+                <td>Example</td>
+                <td>Filter, rectify</td>
+              </tr>
+              <tr>
+                <td>Ask-LLM</td>
+                <td>Auxiliary</td>
+                <td>Judge P(useful)</td>
+                <td>Example</td>
+                <td>Select</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="5">Fine-Tuning & Distillation</td>
+              </tr>
+              <tr>
+                <td>UA-CLM</td>
+                <td>Self</td>
+                <td>Token probability</td>
+                <td>Token</td>
+                <td>Weight loss</td>
+              </tr>
+              <tr>
+                <td>US-Tuning</td>
+                <td>Self</td>
+                <td>Context sufficiency</td>
+                <td>QA pair</td>
+                <td>Gate signal</td>
+              </tr>
+              <tr>
+                <td>C-LoRA</td>
+                <td>Self</td>
+                <td>Example confidence</td>
+                <td>Example</td>
+                <td>Gate adapter</td>
+              </tr>
+              <tr>
+                <td>SelecTKD</td>
+                <td>Auxiliary</td>
+                <td>Teacher token confidence</td>
+                <td>Token</td>
+                <td>Selective distill</td>
+              </tr>
+              <tr>
+                <td>ATKD</td>
+                <td>Auxiliary</td>
+                <td>Teacher uncertainty</td>
+                <td>Token</td>
+                <td>Split supervision</td>
+              </tr>
+              <tr>
+                <td>SRD</td>
+                <td>Self</td>
+                <td>Difficulty + compatibility</td>
+                <td>Example</td>
+                <td>Prioritize</td>
+              </tr>
+
+              <tr class="table-group-header">
+                <td colspan="5">Preference Optimization & RL</td>
+              </tr>
+              <tr>
+                <td>DPO</td>
+                <td>Self</td>
+                <td>Log prob ratio</td>
+                <td>Pair</td>
+                <td>Optimize</td>
+              </tr>
+              <tr>
+                <td>SimPO</td>
+                <td>Self</td>
+                <td>Avg log prob</td>
+                <td>Pair</td>
+                <td>Optimize</td>
+              </tr>
+              <tr>
+                <td>β-DPO</td>
+                <td>Self</td>
+                <td>Pair confidence</td>
+                <td>Pair</td>
+                <td>Adaptive weight</td>
+              </tr>
+              <tr>
+                <td>ConfPO</td>
+                <td>Self</td>
+                <td>Token probability</td>
+                <td>Token</td>
+                <td>Select tokens</td>
+              </tr>
+              <tr>
+                <td>CAPO</td>
+                <td>Self</td>
+                <td>Confidence</td>
+                <td>Pair</td>
+                <td>Modulate margin</td>
+              </tr>
+              <tr>
+                <td>CGPO</td>
+                <td>Self</td>
+                <td>Token confidence</td>
+                <td>Step</td>
+                <td>Find split point</td>
+              </tr>
+              <tr>
+                <td>CRew</td>
+                <td>Self</td>
+                <td>Answer confidence</td>
+                <td>Response</td>
+                <td>Intrinsic reward</td>
+              </tr>
+              <tr>
+                <td>RLSC</td>
+                <td>Self</td>
+                <td>Self-confidence</td>
+                <td>Response</td>
+                <td>Reward shape</td>
+              </tr>
+              <tr>
+                <td>RENT</td>
+                <td>Self</td>
+                <td>Negative entropy</td>
+                <td>Trajectory</td>
+                <td>Intrinsic reward</td>
+              </tr>
+              <tr>
+                <td>UP-RLHF</td>
+                <td>Auxiliary</td>
+                <td>Reward ensemble variance</td>
+                <td>Response</td>
+                <td>Uncertainty penalty</td>
+              </tr>
+              <tr>
+                <td>UA-RLHF</td>
+                <td>Auxiliary</td>
+                <td>Reward variance</td>
+                <td>Response</td>
+                <td>Conservative constraint</td>
+              </tr>
+              <tr>
+                <td>Taming-OC</td>
+                <td>Hybrid</td>
+                <td>Calibration + confidence</td>
+                <td>Response</td>
+                <td>Correct reward</td>
+              </tr>
+              <tr>
+                <td>BCHRL</td>
+                <td>Self</td>
+                <td>Confidence</td>
+                <td>Response/claim</td>
+                <td>Abstention policy</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="discussion">
+        <h2>Discussion</h2>
+        <p>
+          Training uses confidence to allocate gradient mass. Three patterns dominate:
+        </p>
+        <ul>
+          <li>
+            <strong>Low self-confidence = high learning value.</strong> Cherry, ConfPO, and CGPO all target examples or tokens 
+            where the model expresses uncertainty. The intuition: if the model is confident, little is gained by further 
+            optimization. If it is uncertain, gradient is most valuable.
+          </li>
+          <li>
+            <strong>High auxiliary confidence = trustworthy supervision.</strong> SelecTKD, ATKD, and CLEAR use teacher or judge 
+            confidence to decide which supervision signals to use. This prevents learning from noisy or low-confidence teacher outputs.
+          </li>
+          <li>
+            <strong>High reward uncertainty = suppress optimization.</strong> UP-RLHF, UA-RLHF, and Taming-OC all recognize that 
+            when reward models disagree or express low confidence, the RL gradient may be misleading. Conservative measures protect 
+            the learned policy.
+          </li>
+        </ul>
+        <p>
+          The key insight: confidence is not just a metric—it is a <em>control signal that decides which parameters to update and 
+          how much</em>. The next generation of training methods will likely integrate confidence-aware mechanisms more deeply into 
+          the learning dynamics itself.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div><h4>About</h4><p style="font-size:0.85rem;">Companion website for "Confidence as Control: A Survey of Confidence Utilization in Large Language Models"</p></div>
+      <div><h4>Sections</h4><ul>
+        <li><a href="training.html">Training</a></li><li><a href="inference.html">Inference</a></li>
+        <li><a href="routing.html">Routing</a></li><li><a href="rag.html">RAG</a></li>
+        <li><a href="risk.html">Risk</a></li><li><a href="agentic.html">Agentic</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="framework.html">Framework</a></li><li><a href="challenges.html">Challenges</a></li>
+        <li><a href="https://github.com/yubol-bobo/awesome-llm-confidence">GitHub</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 Yubo Li et al., Carnegie Mellon University</p></div>
+  </footer>
+</body>
+</html>
