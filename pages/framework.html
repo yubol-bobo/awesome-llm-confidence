@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unified Definition and Notation | Awesome LLM Confidence</title>
   <link rel="stylesheet" href="../assets/css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
   <header class="header">
@@ -65,13 +64,13 @@
       <section id="decision-state">
         <h2>Decision State & Units</h2>
         <p>
-          At any step $t$ in a generative process, we have a <strong>decision state</strong> that captures the context:
+          At any step <em>t</em> in a generative process, we have a <strong>decision state</strong> that captures the context:
         </p>
-        <div class="math-block">
-          $$\xi_t = \text{(query, partial generation, candidates, evidence, tools, memory, budget)}$$
+        <div class="math-block" style="background:#f4f6f8; border-radius:8px; padding:16px 24px; font-family:'JetBrains Mono',monospace; font-size:1.05rem; text-align:center; margin:1rem 0;">
+          ξ<sub>t</sub> = (query, partial generation, candidates, evidence, tools, memory, budget)
         </div>
         <p>
-          Given this state, we must choose among discrete <strong>decision units</strong> $U_t = \{u_1, u_2, \ldots, u_n\}$. 
+          Given this state, we must choose among discrete <strong>decision units</strong> U<sub>t</sub> = {u<sub>1</sub>, u<sub>2</sub>, …, u<sub>n</sub>}.
           The unit granularity varies by application:
         </p>
         <ul>
@@ -94,12 +93,12 @@
           A <strong>confidence signal</strong> is any reliability-relevant score or distribution produced by the model or auxiliary system. 
           In its most general form:
         </p>
-        <div class="math-block">
-          $$\kappa_t(u; \xi_t) \in \mathbb{R}^m$$
+        <div class="math-block" style="background:#f4f6f8; border-radius:8px; padding:16px 24px; font-family:'JetBrains Mono',monospace; font-size:1.05rem; text-align:center; margin:1rem 0;">
+          κ<sub>t</sub>(u; ξ<sub>t</sub>) ∈ ℝ<sup>m</sup>
         </div>
         <p>
-          This signal is a vector (possibly $m=1$) that quantifies how much to trust, weight, or pursue each decision unit $u$ 
-          given the current state $\xi_t$. Sources include:
+          This signal is a vector (possibly <em>m</em> = 1) that quantifies how much to trust, weight, or pursue each decision unit <em>u</em>
+          given the current state ξ<sub>t</sub>. Sources include:
         </p>
         <ul>
           <li><strong>Self</strong> — token log-probabilities, hidden states, verbalized uncertainty</li>
@@ -155,12 +154,12 @@
           <strong>Key steps:</strong>
         </p>
         <ul>
-          <li><strong>Transform $T̃_t$:</strong> Normalize, calibrate, or combine confidence signals. Examples: softmax (for selection), 
+          <li><strong>Transform T̃<sub>t</sub>:</strong> Normalize, calibrate, or combine confidence signals. Examples: softmax (for selection),
             clipping (for filtering), weighted averaging (for fusion).</li>
-          <li><strong>Policy $\delta_t$:</strong> Map transformed scores to a decision rule. Examples: argmax (select highest), threshold 
+          <li><strong>Policy δ<sub>t</sub>:</strong> Map transformed scores to a decision rule. Examples: argmax (select highest), threshold
             (filter below cutoff), softmax-sample (probabilistic), or defer (abstain).</li>
-          <li><strong>Action $a_t$:</strong> Execute the policy to commit to one unit or a set of units.</li>
-          <li><strong>Updated state $\xi_{t+1}$:</strong> Incorporates action outcome and feeds forward.</li>
+          <li><strong>Action a<sub>t</sub>:</strong> Execute the policy to commit to one unit or a set of units.</li>
+          <li><strong>Updated state ξ<sub>t+1</sub>:</strong> Incorporates action outcome and feeds forward.</li>
         </ul>
       </section>
 
