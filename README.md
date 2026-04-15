@@ -65,13 +65,14 @@ This survey covers **100+ methods** with detailed comparison tables across all s
 ## 📝 Citation
 
 ```bibtex
-@article{li2025confidence,
-  title={Confidence as Control: A Survey of Confidence Utilization 
-         in Large Language Models},
-  author={Li, Yubo and Zhou, Tianyang and Shen, Xiaobin 
-          and Miao, Yidi and Padman, Rema and Krishnan, Ramayya},
-  journal={Under review at Transactions on Machine Learning Research},
-  year={2025}
+@misc{li2026confidence,
+  title  = {Confidence as Control: A Survey of Confidence Utilization
+            in Large Language Models},
+  author = {Yubo Li and Tianyang Zhou and Xiaobin Shen and
+            Yidi Miao and Rema Padman and Ramayya Krishnan},
+  year   = {2026},
+  note   = {Preprint},
+  url    = {https://yubol-bobo.github.io/assets/pdf/Conf_Survey.pdf}
 }
 ```
 
