@@ -70,7 +70,7 @@ This survey covers **100+ methods** with detailed comparison tables across all s
          in Large Language Models},
   author={Li, Yubo and Zhou, Tianyang and Shen, Xiaobin 
           and Miao, Yidi and Padman, Rema and Krishnan, Ramayya},
-  journal={Transactions on Machine Learning Research},
+  journal={Under review at Transactions on Machine Learning Research},
   year={2025}
 }
 ```
